@@ -128,7 +128,7 @@ class TransaksiController extends Controller
         $areas = AreaParkir::where('terisi', '<', DB::raw('kapasitas'))
             ->orderBy('nama_area')
             ->get()
-            ->map(fn (AreaParkir $area) => [
+            ->map(fn(AreaParkir $area) => [
                 'id_area' => $area->id_area,
                 'nama_area' => $area->nama_area,
                 'jenis_kendaraan' => $area->jenis_kendaraan,

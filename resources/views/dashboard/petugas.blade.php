@@ -119,12 +119,17 @@
 @section('scripts')
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    let cachedAreas = @json($areas->map(fn($a) => [
-        'id_area' => $a->id_area,
-        'nama_area' => $a->nama_area,
-        'jenis_kendaraan' => $a->jenis_kendaraan,
-        'sisa_kapasitas' => $a->sisaKapasitas(),
-    ]));
+    @php
+        $cachedAreas = $areas->map(function ($a) {
+            return [
+                'id_area' => $a->id_area,
+                'nama_area' => $a->nama_area,
+                'jenis_kendaraan' => $a->jenis_kendaraan,
+                'sisa_kapasitas' => $a->sisaKapasitas(),
+            ];
+        });
+    @endphp
+    let cachedAreas = @json($cachedAreas);
     let selectedKeluarId = null;
 
     function openMasukModal() {
