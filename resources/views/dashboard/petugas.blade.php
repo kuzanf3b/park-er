@@ -11,8 +11,7 @@
         </button>
     </div>
     <div class="card-body" style="padding-top:16px">
-        <p class="text-muted" style="font-size:13px;margin-bottom:12px">Workflow cepat untuk petugas. Semua aksi dilakukan di halaman ini tanpa reload penuh.</p>
-        <div class="form-group" style="max-width:380px;margin-bottom:12px">
+        <div class="form-group" style="width:420px;display:flex;justify-content:flex-end;margin-bottom:12px">
             <label class="form-label" for="searchOperasional">Cari Plat / Pemilik</label>
             <input
                 type="text"
