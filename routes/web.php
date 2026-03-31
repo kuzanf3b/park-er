@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/transaksi/masuk', [TransaksiController::class, 'storeMasuk'])->name('transaksi.store-masuk');
         Route::get('/transaksi/{id}/keluar', [TransaksiController::class, 'showKeluar'])->name('transaksi.keluar');
         Route::post('/transaksi/{id}/keluar', [TransaksiController::class, 'processKeluar'])->name('transaksi.process-keluar');
+    });
+
+    // Struk transaksi - admin & petugas
+    Route::middleware('role:admin,petugas')->group(function () {
         Route::get('/transaksi/{id}/receipt', [TransaksiController::class, 'receipt'])->name('transaksi.receipt');
     });
 

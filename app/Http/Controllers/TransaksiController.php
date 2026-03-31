@@ -103,11 +103,21 @@ class TransaksiController extends Controller
         return view('transaksi.receipt', compact('transaksi', 'biayaDetail'));
     }
 
-    public function aktifJson()
+    public function aktifJson(Request $request)
     {
-        $aktif = Transaksi::aktif()
+        $aktifQuery = Transaksi::aktif()
             ->with(['kendaraan', 'areaParkir', 'tarif'])
-            ->latest('waktu_masuk')
+            ->latest('waktu_masuk');
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+            $aktifQuery->whereHas('kendaraan', function ($query) use ($search) {
+                $query->where('plat_nomor', 'like', "%{$search}%")
+                    ->orWhere('pemilik', 'like', "%{$search}%");
+            });
+        }
+
+        $aktif = $aktifQuery
             ->get()
             ->map(function (Transaksi $transaksi) {
                 $durasiMenit = $transaksi->waktu_masuk->diffInMinutes(now());
@@ -117,6 +127,7 @@ class TransaksiController extends Controller
                 return [
                     'id_parkir' => $transaksi->id_parkir,
                     'plat_nomor' => $transaksi->kendaraan->plat_nomor,
+                    'pemilik' => $transaksi->kendaraan->pemilik,
                     'jenis_kendaraan' => $transaksi->kendaraan->jenis_kendaraan,
                     'area' => $transaksi->areaParkir?->nama_area,
                     'waktu_masuk' => $transaksi->waktu_masuk->format('d/m/Y H:i'),
@@ -195,6 +206,7 @@ class TransaksiController extends Controller
                 'id_parkir' => $result['transaksi']->id_parkir,
                 'total' => (int) $result['total'],
                 'durasi' => (int) $result['durasi'],
+                'receipt_url' => route('transaksi.receipt', $result['transaksi']->id_parkir),
             ]);
         } catch (\Throwable $e) {
             return response()->json([

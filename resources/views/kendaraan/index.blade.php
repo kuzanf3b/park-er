@@ -63,7 +63,7 @@
                     <td>{{ $k->pemilik }}</td>
                     <td>
                         @if($k->isSedangParkir())
-                            <span class="badge badge-info"><i class="fas fa-circle" style="font-size:6px"></i> Sedang Parkir</span>
+                            <span class="badge badge-info"><i class="fas fa-circle" style="font-size:6px"></i>Sedang Parkir</span>
                         @else
                             <span class="badge badge-success">Tersedia</span>
                         @endif

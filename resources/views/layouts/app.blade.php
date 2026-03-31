@@ -779,10 +779,6 @@
 
             @if(auth()->user()->role === 'admin')
             <div class="sidebar-label">Operasional</div>
-            <a href="{{ route('transaksi.masuk') }}" class="sidebar-link {{ request()->routeIs('transaksi.masuk') ? 'active' : '' }}">
-                <i class="fas fa-arrow-right"></i>
-                <span>Kendaraan Masuk</span>
-            </a>
             <a href="{{ route('transaksi.index') }}" class="sidebar-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transaksi</span>

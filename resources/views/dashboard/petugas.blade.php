@@ -12,6 +12,15 @@
     </div>
     <div class="card-body" style="padding-top:16px">
         <p class="text-muted" style="font-size:13px;margin-bottom:12px">Workflow cepat untuk petugas. Semua aksi dilakukan di halaman ini tanpa reload penuh.</p>
+        <div class="form-group" style="max-width:380px;margin-bottom:12px">
+            <label class="form-label" for="searchOperasional">Cari Plat / Pemilik</label>
+            <input
+                type="text"
+                id="searchOperasional"
+                class="form-control"
+                placeholder="Contoh: B 1234 ABC atau Budi"
+            >
+        </div>
         <div id="operasionalMessage" style="display:none"></div>
         <div class="table-container">
             <table>
@@ -19,6 +28,7 @@
                     <tr>
                         <th>#</th>
                         <th>Plat Nomor</th>
+                        <th>Pemilik</th>
                         <th>Jenis</th>
                         <th>Area</th>
                         <th>Waktu Masuk</th>
@@ -32,6 +42,7 @@
                     <tr>
                         <td>{{ $t->id_parkir }}</td>
                         <td><strong>{{ $t->kendaraan->plat_nomor ?? '-' }}</strong></td>
+                        <td>{{ $t->kendaraan->pemilik ?? '-' }}</td>
                         <td>{{ ucfirst($t->kendaraan->jenis_kendaraan ?? '-') }}</td>
                         <td>{{ $t->areaParkir->nama_area ?? '-' }}</td>
                         <td>{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>
@@ -45,7 +56,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <i class="fas fa-parking"></i>
                                 <p>Tidak ada kendaraan aktif.</p>
@@ -131,6 +142,8 @@
     @endphp
     let cachedAreas = @json($cachedAreas);
     let selectedKeluarId = null;
+    let operasionalSearch = '';
+    let refreshTimer = null;
 
     function openMasukModal() {
         document.getElementById('masukModal').style.display = 'flex';
@@ -176,7 +189,8 @@
 
     async function refreshOperasional() {
         try {
-            const response = await fetch('{{ route('operasional.aktif-json') }}');
+            const query = operasionalSearch ? `?search=${encodeURIComponent(operasionalSearch)}` : '';
+            const response = await fetch(`{{ route('operasional.aktif-json') }}${query}`);
             const data = await response.json();
             cachedAreas = data.areas || [];
 
@@ -184,6 +198,7 @@
                 <tr>
                     <td>${item.id_parkir}</td>
                     <td><strong>${item.plat_nomor}</strong></td>
+                    <td>${item.pemilik || '-'}</td>
                     <td>${item.jenis_kendaraan}</td>
                     <td>${item.area || '-'}</td>
                     <td>${item.waktu_masuk}</td>
@@ -199,7 +214,7 @@
 
             document.getElementById('aktifRows').innerHTML = rows.length ? rows.join('') : `
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="empty-state">
                             <i class="fas fa-parking"></i>
                             <p>Tidak ada kendaraan aktif.</p>
@@ -286,11 +301,32 @@
             closeKeluarModal();
             await refreshOperasional();
             showMessage('success', data.message || 'Kendaraan berhasil keluar.');
+
+            if (data.receipt_url) {
+                const receiptWindow = window.open(data.receipt_url, '_blank');
+
+                if (!receiptWindow) {
+                    window.location.href = data.receipt_url;
+                }
+            }
         } catch (e) {
             showMessage('error', e.message);
         }
     });
 
+    document.getElementById('searchOperasional').addEventListener('input', (event) => {
+        operasionalSearch = event.target.value.trim();
+
+        if (refreshTimer) {
+            clearTimeout(refreshTimer);
+        }
+
+        refreshTimer = setTimeout(() => {
+            refreshOperasional();
+        }, 250);
+    });
+
+    refreshOperasional();
     setInterval(refreshOperasional, 15000);
 </script>
 
