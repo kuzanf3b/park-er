@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaParkir;
 use App\Models\Kendaraan;
 use App\Models\Transaksi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,11 @@ class DashboardController extends Controller
                 ->orderBy('nama_area')
                 ->get();
 
-            return view('dashboard.petugas', compact('aktifTransaksis', 'areas'));
+            $owners = User::where('role', 'owner')
+                ->orderBy('nama_lengkap')
+                ->get();
+
+            return view('dashboard.petugas', compact('aktifTransaksis', 'areas', 'owners'));
         }
 
         if ($user->role === 'owner') {

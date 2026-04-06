@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\AreaParkir;
 use App\Models\Kendaraan;
 use App\Models\Transaksi;
+use App\Models\User;
 use App\Services\ParkingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TransaksiController extends Controller
 {
@@ -42,7 +44,12 @@ class TransaksiController extends Controller
     public function createMasuk()
     {
         $areas = AreaParkir::where('terisi', '<', DB::raw('kapasitas'))->get();
-        return view('transaksi.masuk', compact('areas'));
+        $owners = User::where('role', 'owner')
+            ->where('status_aktif', true)
+            ->orderBy('nama_lengkap')
+            ->get();
+
+        return view('transaksi.masuk', compact('areas', 'owners'));
     }
 
     public function storeMasuk(Request $request)
@@ -53,6 +60,12 @@ class TransaksiController extends Controller
             'id_area' => 'required|exists:tb_area_parkir,id_area',
             'warna' => 'nullable|string|max:50',
             'pemilik' => 'nullable|string|max:100',
+            'id_user' => [
+                'required',
+                Rule::exists('tb_user', 'id_user')->where(function ($query) {
+                    $query->where('role', 'owner')->where('status_aktif', true);
+                }),
+            ],
         ]);
 
         try {
@@ -160,6 +173,12 @@ class TransaksiController extends Controller
             'id_area' => 'required|exists:tb_area_parkir,id_area',
             'warna' => 'nullable|string|max:50',
             'pemilik' => 'nullable|string|max:100',
+            'id_user' => [
+                'required',
+                Rule::exists('tb_user', 'id_user')->where(function ($query) {
+                    $query->where('role', 'owner')->where('status_aktif', true);
+                }),
+            ],
         ]);
 
         try {

@@ -57,6 +57,18 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Akun Owner Kendaraan *</label>
+                <select name="id_user" class="form-control" required>
+                    <option value="">-- Pilih owner --</option>
+                    @foreach($owners as $owner)
+                        <option value="{{ $owner->id_user }}" {{ (string) old('id_user') === (string) $owner->id_user ? 'selected' : '' }}>
+                            {{ $owner->nama_lengkap }} ({{ $owner->username }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="btn-group" style="margin-top:8px">
                 <button type="submit" class="btn btn-success">
                     <i class="fas fa-check"></i> Simpan & Masuk

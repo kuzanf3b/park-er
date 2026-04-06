@@ -106,6 +106,17 @@
                 <label class="form-label">Pemilik</label>
                 <input type="text" name="pemilik" class="form-control">
             </div>
+            <div class="form-group">
+                <label class="form-label">Akun Owner Kendaraan *</label>
+                <select name="id_user" class="form-control" required>
+                    <option value="">-- Pilih owner --</option>
+                    @foreach($owners as $owner)
+                        <option value="{{ $owner->id_user }}" {{ (string) old('id_user', $kendaraan->id_user ?? '') === (string) $owner->id_user ? 'selected' : '' }}>
+                            {{ $owner->nama_lengkap }} ({{ $owner->username }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
             <div class="btn-group" style="justify-content:flex-end">
                 <button type="button" class="btn btn-outline" onclick="closeMasukModal()">Batal</button>
                 <button type="submit" class="btn btn-success">Simpan</button>

@@ -31,7 +31,7 @@ class ParkingService
                     'jenis_kendaraan' => $data['jenis_kendaraan'],
                     'warna' => $data['warna'] ?? '-',
                     'pemilik' => $data['pemilik'] ?? '-',
-                    'id_user' => $userId,
+                    'id_user' => (int) ($data['id_user'] ?? $userId),
                 ]
             );
 
