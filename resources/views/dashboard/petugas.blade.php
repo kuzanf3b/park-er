@@ -36,21 +36,6 @@
                     </thead>
                     <tbody id="aktifRows">
                         @forelse($transaksis as $t)
-                            {{-- <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td><strong>{{ $t->kendaraan->plat_nomor ?? '-' }}</strong></td>
-                                <td>{{ $t->kendaraan->pemilik ?? '-' }}</td>
-                                <td>{{ ucfirst($t->kendaraan->jenis_kendaraan ?? '-') }}</td>
-                                <td>{{ $t->areaParkir->nama_area ?? '-' }}</td>
-                                <td>{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>
-                                    <button class="btn btn-warning btn-sm" onclick="previewKeluar({{ $t->id_parkir }})">
-                                        <i class="fas fa-sign-out-alt"></i> Keluar
-                                    </button>
-                                </td>
-                            </tr> --}}
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td><strong>{{ $t->kendaraan->plat_nomor ?? '-' }}</strong></td>
