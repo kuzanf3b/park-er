@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -157,6 +162,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="register-container">
         <div class="register-brand">
@@ -173,7 +179,8 @@
 
                 <div class="form-group">
                     <label class="form-label">Nama Lengkap</label>
-                    <input type="text" name="nama_lengkap" class="form-control" value="{{ old('nama_lengkap') }}" placeholder="Masukkan nama lengkap" required>
+                    <input type="text" name="nama_lengkap" class="form-control" value="{{ old('nama_lengkap') }}"
+                        placeholder="Masukkan nama lengkap" required>
                     @error('nama_lengkap')
                         <div class="form-error">{{ $message }}</div>
                     @enderror
@@ -182,7 +189,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" value="{{ old('username') }}" placeholder="Contoh: petugas01" required>
+                        <input type="text" name="username" class="form-control" value="{{ old('username') }}"
+                            placeholder="Contoh: petugas01" required>
                         @error('username')
                             <div class="form-error">{{ $message }}</div>
                         @enderror
@@ -193,7 +201,8 @@
                             <option value="">Pilih role</option>
                             <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                             <option value="petugas" {{ old('role') === 'petugas' ? 'selected' : '' }}>Petugas</option>
-                            <option value="owner" {{ old('role') === 'owner' ? 'selected' : '' }}>Owner Kendaraan</option>
+                            <option value="owner" {{ old('role') === 'owner' ? 'selected' : '' }}>Owner Kendaraan
+                            </option>
                         </select>
                         @error('role')
                             <div class="form-error">{{ $message }}</div>
@@ -204,14 +213,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required>
+                        <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter"
+                            required>
                         @error('password')
                             <div class="form-error">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password" required>
+                        <input type="password" name="password_confirmation" class="form-control"
+                            placeholder="Ulangi password" required>
                     </div>
                 </div>
 
@@ -226,4 +237,5 @@
         </div>
     </div>
 </body>
+
 </html>

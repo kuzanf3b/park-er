@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -42,7 +47,7 @@
             font-size: 28px;
             color: #fff;
             margin-bottom: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         .login-brand h1 {
@@ -59,9 +64,9 @@
         }
 
         .login-card {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 36px;
         }
@@ -94,8 +99,8 @@
         .form-control {
             width: 100%;
             padding: 12px 14px 12px 40px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             color: #fff;
             font-size: 14px;
@@ -106,8 +111,8 @@
         .form-control:focus {
             outline: none;
             border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
-            background: rgba(255,255,255,0.08);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .form-control::placeholder {
@@ -138,7 +143,7 @@
         .btn-login:hover {
             transform: translateY(-1px);
             background: #1e40af;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.28);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.28);
         }
 
         .btn-login:active {
@@ -181,6 +186,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-brand">
@@ -198,7 +204,8 @@
                     <label class="form-label">Username</label>
                     <div class="form-input-wrapper">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="username" class="form-control" placeholder="Masukkan username" value="{{ old('username') }}" autofocus required>
+                        <input type="text" name="username" class="form-control" placeholder="Masukkan username"
+                            value="{{ old('username') }}" autofocus required>
                     </div>
                     @error('username')
                         <div class="form-error">{{ $message }}</div>
@@ -209,7 +216,8 @@
                     <label class="form-label">Password</label>
                     <div class="form-input-wrapper">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+                        <input type="password" name="password" class="form-control" placeholder="Masukkan password"
+                            required>
                     </div>
                 </div>
 
@@ -228,4 +236,5 @@
         </div>
     </div>
 </body>
+
 </html>
