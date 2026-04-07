@@ -24,11 +24,10 @@
                         <tr>
                             <th>#</th>
                             <th>Plat Nomor</th>
+                            <th>Pemilik</th>
                             <th>Jenis</th>
                             <th>Area</th>
                             <th>Waktu Masuk</th>
-                            <th>Waktu Keluar</th>
-                            <th>Durasi</th>
                             <th>Biaya</th>
                             <th>Status</th>
                             <th>Aksi</th>
@@ -39,11 +38,10 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td><strong>{{ $t->kendaraan->plat_nomor ?? '-' }}</strong></td>
+                                <td>{{ $t->kendaraan->pemilik ?? '-' }}</td>
                                 <td>{{ ucfirst($t->kendaraan->jenis_kendaraan ?? '-') }}</td>
                                 <td>{{ $t->areaParkir->nama_area ?? '-' }}</td>
                                 <td>{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>
-                                <td>{{ $t->waktu_keluar ? $t->waktu_keluar->format('d/m/Y H:i') : '-' }}</td>
-                                <td>{{ $t->durasi ? $t->durasi . ' jam' : '-' }}</td>
                                 <td>
                                     @if ($t->biaya_total)
                                         <strong>Rp {{ number_format($t->biaya_total, 0, ',', '.') }}</strong>
@@ -75,7 +73,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10">
+                                <td colspan="11">
                                     <div class="empty-state">
                                         <i class="fas fa-parking"></i>
                                         <p>Belum ada transaksi</p>
@@ -129,15 +127,10 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Akun Owner Kendaraan *</label>
-                    <select name="id_user" class="form-control" required>
-                        <option value="">-- Pilih owner --</option>
-                        @foreach ($owners as $owner)
-                            <option value="{{ $owner->id_user }}"
-                                {{ (string) old('id_user', $kendaraan->id_user ?? '') === (string) $owner->id_user ? 'selected' : '' }}>
-                                {{ $owner->nama_lengkap }} ({{ $owner->username }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <input type="hidden" name="id_user" id="selectedOwnerId" required>
+                    <input type="text" id="ownerSearchInput" class="form-control"
+                        placeholder="Cari nama owner atau username..." autocomplete="off" required>
+                    <div id="ownerSuggestions" class="suggestions-list" style="display:none"></div>
                 </div>
                 <div class="btn-group" style="justify-content:flex-end">
                     <button type="button" class="btn btn-outline" onclick="closeMasukModal()">Batal</button>
@@ -171,11 +164,61 @@
                     'sisa_kapasitas' => $a->sisaKapasitas(),
                 ];
             });
+
+            $ownerOptions = $owners
+                ->map(function ($owner) {
+                    return [
+                        'id_user' => (int) $owner->id_user,
+                        'nama_lengkap' => $owner->nama_lengkap,
+                        'username' => $owner->username,
+                    ];
+                })
+                ->values();
         @endphp
         let cachedAreas = @json($cachedAreas);
+        const ownerOptions = @json($ownerOptions);
         let selectedKeluarId = null;
         let operasionalSearch = '';
         let refreshTimer = null;
+
+        function renderOwnerSuggestions(query = '') {
+            const suggestionBox = document.getElementById('ownerSuggestions');
+            const normalized = query.trim().toLowerCase();
+
+            const filteredOwners = ownerOptions.filter(owner => {
+                if (!normalized) return true;
+                return owner.nama_lengkap.toLowerCase().includes(normalized) ||
+                    owner.username.toLowerCase().includes(normalized);
+            });
+
+            if (!filteredOwners.length) {
+                suggestionBox.innerHTML = '<button type="button" class="suggestion-item" disabled>Owner tidak ada</button>';
+                suggestionBox.style.display = 'block';
+                return;
+            }
+
+            suggestionBox.innerHTML = filteredOwners
+                .map(owner => `
+                    <button
+                        type="button"
+                        class="suggestion-item"
+                        onclick="selectOwner(${owner.id_user})">
+                        ${owner.nama_lengkap} (${owner.username})
+                    </button>
+                `)
+                .join('');
+
+            suggestionBox.style.display = 'block';
+        }
+
+        function selectOwner(idUser) {
+            const owner = ownerOptions.find(item => Number(item.id_user) === Number(idUser));
+            if (!owner) return;
+
+            document.getElementById('selectedOwnerId').value = idUser;
+            document.getElementById('ownerSearchInput').value = `${owner.nama_lengkap} (${owner.username})`;
+            document.getElementById('ownerSuggestions').style.display = 'none';
+        }
 
         function openMasukModal() {
             document.getElementById('masukModal').style.display = 'flex';
@@ -185,6 +228,7 @@
             document.getElementById('masukModal').style.display = 'none';
             document.getElementById('masukForm').reset();
             document.getElementById('idAreaModal').innerHTML = '<option value="">-- Pilih Jenis Dulu --</option>';
+            document.getElementById('ownerSuggestions').style.display = 'none';
         }
 
         function openKeluarModal() {
@@ -234,11 +278,10 @@
                 <tr>
                     <td>${index + 1}</td>
                     <td><strong>${item.plat_nomor}</strong></td>
+                    <td>${item.pemilik || '-'}</td>
                     <td>${item.jenis_kendaraan ? item.jenis_kendaraan.charAt(0).toUpperCase() + item.jenis_kendaraan.slice(1) : '-'}</td>
                     <td>${item.area || '-'}</td>
                     <td>${item.waktu_masuk}</td>
-                    <td>${item.waktu_keluar || '-'}</td>
-                    <td>${item.durasi_jam ? `${item.durasi_jam} jam` : '-'}</td>
                     <td>${item.biaya_total ? `<strong>Rp ${Number(item.biaya_total).toLocaleString('id-ID')}</strong>` : '-'}</td>
                     <td>
                         ${item.status === 'masuk'
@@ -255,7 +298,7 @@
 
                 document.getElementById('aktifRows').innerHTML = rows.length ? rows.join('') : `
                 <tr>
-                    <td colspan="10">
+                    <td colspan="11">
                         <div class="empty-state">
                             <i class="fas fa-parking"></i>
                             <p>Belum ada transaksi</p>
@@ -272,6 +315,11 @@
             event.preventDefault();
             const form = document.getElementById('masukForm');
             const formData = new FormData(form);
+
+            if (!formData.get('id_user')) {
+                showMessage('error', 'Silakan pilih akun owner dari daftar saran.');
+                return;
+            }
 
             try {
                 const response = await fetch('{{ route('operasional.store-masuk-json') }}', {
@@ -369,6 +417,34 @@
             }, 250);
         });
 
+        const ownerSearchInput = document.getElementById('ownerSearchInput');
+        const ownerSuggestionBox = document.getElementById('ownerSuggestions');
+
+        ownerSearchInput.addEventListener('focus', () => {
+            renderOwnerSuggestions(ownerSearchInput.value);
+        });
+
+        ownerSearchInput.addEventListener('input', () => {
+            document.getElementById('selectedOwnerId').value = '';
+            renderOwnerSuggestions(ownerSearchInput.value);
+        });
+
+        ownerSearchInput.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter') return;
+
+            const firstOwnerButton = ownerSuggestionBox.querySelector('.suggestion-item:not(:disabled)');
+            if (!firstOwnerButton) return;
+
+            event.preventDefault();
+            firstOwnerButton.click();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!ownerSuggestionBox.contains(event.target) && event.target !== ownerSearchInput) {
+                ownerSuggestionBox.style.display = 'none';
+            }
+        });
+
         refreshOperasional();
         setInterval(refreshOperasional, 15000);
     </script>
@@ -392,6 +468,40 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
             padding: 20px;
+        }
+
+        .suggestions-list {
+            margin-top: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .suggestion-item {
+            width: 100%;
+            padding: 10px 12px;
+            border: 0;
+            border-bottom: 1px solid var(--border);
+            background: transparent;
+            text-align: left;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: 0;
+        }
+
+        .suggestion-item:hover:not(:disabled) {
+            background: var(--surface-2);
+        }
+
+        .suggestion-item:disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
         }
     </style>
 @endsection

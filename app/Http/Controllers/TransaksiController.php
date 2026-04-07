@@ -154,6 +154,7 @@ class TransaksiController extends Controller
                 return [
                     'id_parkir' => $transaksi->id_parkir,
                     'plat_nomor' => $transaksi->kendaraan->plat_nomor,
+                    'pemilik' => $transaksi->kendaraan->pemilik,
                     'jenis_kendaraan' => $transaksi->kendaraan->jenis_kendaraan,
                     'area' => $transaksi->areaParkir?->nama_area,
                     'waktu_masuk' => $transaksi->waktu_masuk->format('d/m/Y H:i'),
