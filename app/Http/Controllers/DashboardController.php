@@ -17,9 +17,9 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'petugas') {
-            $aktifTransaksis = Transaksi::aktif()
-                ->with(['kendaraan', 'areaParkir', 'tarif'])
-                ->latest('waktu_masuk')
+            $transaksis = Transaksi::with(['kendaraan', 'areaParkir', 'tarif'])
+                ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
+                ->latest('created_at')
                 ->get();
 
             $areas = AreaParkir::where('terisi', '<', DB::raw('kapasitas'))
@@ -30,7 +30,7 @@ class DashboardController extends Controller
                 ->orderBy('nama_lengkap')
                 ->get();
 
-            return view('dashboard.petugas', compact('aktifTransaksis', 'areas', 'owners'));
+            return view('dashboard.petugas', compact('transaksis', 'areas', 'owners'));
         }
 
         if ($user->role === 'owner') {

@@ -36,7 +36,11 @@ class TransaksiController extends Controller
             });
         }
 
-        $transaksis = $query->latest('created_at')->paginate(15)->withQueryString();
+        $transaksis = $query
+            ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
+            ->latest('created_at')
+            ->paginate(15)
+            ->withQueryString();
 
         return view('transaksi.index', compact('transaksis'));
     }
@@ -105,47 +109,59 @@ class TransaksiController extends Controller
     public function receipt(int $id)
     {
         $transaksi = Transaksi::with(['kendaraan', 'tarif', 'areaParkir', 'user'])->findOrFail($id);
+        $backRoute = Auth::user()?->role === 'petugas' ? 'dashboard' : 'transaksi.index';
 
         if ($transaksi->status !== 'keluar') {
-            return redirect()->route('transaksi.index');
+            return redirect()->route($backRoute);
         }
 
         $tarifPerJam = (int) $transaksi->tarif->tarif_per_jam;
         $biayaDetail = $this->parkingService->hitungBiaya($transaksi->durasi, $tarifPerJam);
 
-        return view('transaksi.receipt', compact('transaksi', 'biayaDetail'));
+        return view('transaksi.receipt', compact('transaksi', 'biayaDetail', 'backRoute'));
     }
 
     public function aktifJson(Request $request)
     {
-        $aktifQuery = Transaksi::aktif()
-            ->with(['kendaraan', 'areaParkir', 'tarif'])
-            ->latest('waktu_masuk');
+        $transaksiQuery = Transaksi::with(['kendaraan', 'areaParkir', 'tarif'])
+            ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
+            ->latest('created_at');
 
         if ($request->filled('search')) {
             $search = trim((string) $request->search);
-            $aktifQuery->whereHas('kendaraan', function ($query) use ($search) {
+            $transaksiQuery->whereHas('kendaraan', function ($query) use ($search) {
                 $query->where('plat_nomor', 'like', "%{$search}%")
                     ->orWhere('pemilik', 'like', "%{$search}%");
             });
         }
 
-        $aktif = $aktifQuery
+        $transaksis = $transaksiQuery
             ->get()
             ->map(function (Transaksi $transaksi) {
-                $durasiMenit = $transaksi->waktu_masuk->diffInMinutes(now());
-                $durasiJam = max(1, (int) ceil($durasiMenit / 60));
-                $estimasi = $this->parkingService->hitungBiaya($durasiJam, (int) $transaksi->tarif->tarif_per_jam);
+                $durasiJam = null;
+                $biaya = null;
+
+                if ($transaksi->status === 'masuk') {
+                    $durasiMenit = $transaksi->waktu_masuk->diffInMinutes(now());
+                    $durasiJam = max(1, (int) ceil($durasiMenit / 60));
+                    $estimasi = $this->parkingService->hitungBiaya($durasiJam, (int) $transaksi->tarif->tarif_per_jam);
+                    $biaya = (int) $estimasi['total'];
+                } else {
+                    $durasiJam = $transaksi->durasi;
+                    $biaya = $transaksi->biaya_total;
+                }
 
                 return [
                     'id_parkir' => $transaksi->id_parkir,
                     'plat_nomor' => $transaksi->kendaraan->plat_nomor,
-                    'pemilik' => $transaksi->kendaraan->pemilik,
                     'jenis_kendaraan' => $transaksi->kendaraan->jenis_kendaraan,
                     'area' => $transaksi->areaParkir?->nama_area,
                     'waktu_masuk' => $transaksi->waktu_masuk->format('d/m/Y H:i'),
+                    'waktu_keluar' => $transaksi->waktu_keluar?->format('d/m/Y H:i'),
                     'durasi_jam' => $durasiJam,
-                    'estimasi_biaya' => (int) $estimasi['total'],
+                    'biaya_total' => $biaya,
+                    'status' => $transaksi->status,
+                    'receipt_url' => route('transaksi.receipt', $transaksi->id_parkir),
                 ];
             });
 
@@ -160,7 +176,7 @@ class TransaksiController extends Controller
             ]);
 
         return response()->json([
-            'aktif' => $aktif,
+            'transaksis' => $transaksis,
             'areas' => $areas,
         ]);
     }

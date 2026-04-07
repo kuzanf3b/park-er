@@ -56,7 +56,7 @@
             <tbody>
                 @forelse($kendaraans as $k)
                 <tr>
-                    <td>{{ $k->id_kendaraan }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td><strong>{{ $k->plat_nomor }}</strong></td>
                     <td><span class="badge badge-primary">{{ ucfirst($k->jenis_kendaraan) }}</span></td>
                     <td>{{ $k->warna }}</td>

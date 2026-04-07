@@ -26,7 +26,7 @@
             <tbody>
                 @foreach($users as $u)
                 <tr>
-                    <td>{{ $u->id_user }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td><strong>{{ $u->username }}</strong></td>
                     <td>{{ $u->nama_lengkap }}</td>
                     <td>
