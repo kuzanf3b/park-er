@@ -7,7 +7,8 @@
                 </li>
             @else
                 <li>
-                    <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Sebelumnya">&laquo; Sebelumnya</a>
+                    <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Sebelumnya">&laquo;
+                        Sebelumnya</a>
                 </li>
             @endif
 
@@ -29,7 +30,8 @@
 
             @if ($paginator->hasMorePages())
                 <li>
-                    <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Berikutnya">Berikutnya &raquo;</a>
+                    <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Berikutnya">Berikutnya
+                        &raquo;</a>
                 </li>
             @else
                 <li class="disabled" aria-disabled="true" aria-label="Berikutnya">
