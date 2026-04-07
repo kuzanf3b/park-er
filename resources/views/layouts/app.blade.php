@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --primary: #4f46e5;
@@ -28,10 +35,10 @@
             --sidebar-bg: #0f172a;
             --sidebar-hover: #1e293b;
             --sidebar-active: #4f46e5;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --radius: 8px;
             --radius-lg: 12px;
             --transition: 0.2s ease;
@@ -66,7 +73,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .sidebar-brand-icon {
@@ -144,7 +151,7 @@
 
         .sidebar-footer {
             padding: 16px;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .sidebar-user {
@@ -276,8 +283,15 @@
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert-success {
@@ -372,11 +386,30 @@
             white-space: nowrap;
         }
 
-        .badge-success { background: #ecfdf5; color: #065f46; }
-        .badge-danger { background: #fef2f2; color: #991b1b; }
-        .badge-warning { background: #fffbeb; color: #92400e; }
-        .badge-info { background: #eff6ff; color: #1e40af; }
-        .badge-primary { background: #eef2ff; color: #3730a3; }
+        .badge-success {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .badge-primary {
+            background: #eef2ff;
+            color: #3730a3;
+        }
 
         /* Buttons */
         .btn {
@@ -502,9 +535,23 @@
         }
 
         /* Grid */
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
 
         /* Stat Cards */
         .stat-card {
@@ -535,10 +582,25 @@
             flex-shrink: 0;
         }
 
-        .stat-icon.blue { background: #eff6ff; color: #2563eb; }
-        .stat-icon.green { background: #ecfdf5; color: #059669; }
-        .stat-icon.yellow { background: #fffbeb; color: #d97706; }
-        .stat-icon.purple { background: #f5f3ff; color: #7c3aed; }
+        .stat-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .stat-icon.green {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .stat-icon.yellow {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .stat-icon.purple {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
 
         .stat-info h4 {
             font-size: 12px;
@@ -571,9 +633,17 @@
             transition: width 0.5s ease;
         }
 
-        .progress-fill.green { background: var(--success); }
-        .progress-fill.yellow { background: var(--warning); }
-        .progress-fill.red { background: var(--danger); }
+        .progress-fill.green {
+            background: var(--success);
+        }
+
+        .progress-fill.yellow {
+            background: var(--warning);
+        }
+
+        .progress-fill.red {
+            background: var(--danger);
+        }
 
         /* Pagination */
         .pagination {
@@ -616,30 +686,80 @@
         }
 
         /* Utility */
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-muted); }
-        .text-success { color: var(--success); }
-        .text-danger { color: var(--danger); }
-        .text-warning { color: var(--warning); }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .mt-2 { margin-top: 8px; }
-        .mt-4 { margin-top: 16px; }
-        .mt-6 { margin-top: 24px; }
-        .mb-4 { margin-bottom: 16px; }
-        .mb-6 { margin-bottom: 24px; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        .text-warning {
+            color: var(--warning);
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mt-2 {
+            margin-top: 8px;
+        }
+
+        .mt-4 {
+            margin-top: 16px;
+        }
+
+        .mt-6 {
+            margin-top: 24px;
+        }
+
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+
+        .mb-6 {
+            margin-bottom: 24px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        .gap-4 {
+            gap: 16px;
+        }
 
         /* Overlay for mobile sidebar */
         .sidebar-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 45;
         }
 
@@ -669,7 +789,9 @@
                 padding: 16px;
             }
 
-            .grid-2, .grid-3, .grid-4 {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
                 grid-template-columns: 1fr;
             }
 
@@ -754,6 +876,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -772,56 +895,64 @@
 
         <nav class="sidebar-nav">
             <div class="sidebar-label">Menu Utama</div>
-            <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('dashboard') }}"
+                class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
 
-            @if(auth()->user()->role === 'admin')
-            <div class="sidebar-label">Operasional</div>
-            <a href="{{ route('transaksi.index') }}" class="sidebar-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
-                <i class="fas fa-exchange-alt"></i>
-                <span>Transaksi</span>
-            </a>
+            @if (auth()->user()->role === 'admin')
+                <div class="sidebar-label">Operasional</div>
+                <a href="{{ route('transaksi.index') }}"
+                    class="sidebar-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transaksi</span>
+                </a>
             @endif
 
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
-            <a href="{{ route('kendaraan.index') }}" class="sidebar-link {{ request()->routeIs('kendaraan.*') ? 'active' : '' }}">
-                <i class="fas fa-motorcycle"></i>
-                <span>{{ auth()->user()->role === 'owner' ? 'Kendaraan Saya' : 'Kendaraan' }}</span>
-            </a>
+            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
+                <a href="{{ route('kendaraan.index') }}"
+                    class="sidebar-link {{ request()->routeIs('kendaraan.*') ? 'active' : '' }}">
+                    <i class="fas fa-motorcycle"></i>
+                    <span>{{ auth()->user()->role === 'owner' ? 'Kendaraan Saya' : 'Kendaraan' }}</span>
+                </a>
             @endif
 
-            @if(auth()->user()->role === 'admin')
-            <div class="sidebar-label">Pengaturan</div>
-            <a href="{{ route('area-parkir.index') }}" class="sidebar-link {{ request()->routeIs('area-parkir.*') ? 'active' : '' }}">
-                <i class="fas fa-parking"></i>
-                <span>Area Parkir</span>
-            </a>
-            <a href="{{ route('tarif.index') }}" class="sidebar-link {{ request()->routeIs('tarif.*') ? 'active' : '' }}">
-                <i class="fas fa-tags"></i>
-                <span>Tarif</span>
-            </a>
-            <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i>
-                <span>Manajemen User</span>
-            </a>
+            @if (auth()->user()->role === 'admin')
+                <div class="sidebar-label">Pengaturan</div>
+                <a href="{{ route('area-parkir.index') }}"
+                    class="sidebar-link {{ request()->routeIs('area-parkir.*') ? 'active' : '' }}">
+                    <i class="fas fa-parking"></i>
+                    <span>Area Parkir</span>
+                </a>
+                <a href="{{ route('tarif.index') }}"
+                    class="sidebar-link {{ request()->routeIs('tarif.*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Tarif</span>
+                </a>
+                <a href="{{ route('users.index') }}"
+                    class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Manajemen User</span>
+                </a>
             @endif
 
-            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
-            <div class="sidebar-label">Laporan</div>
-            <a href="{{ route('laporan.index') }}" class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-bar"></i>
-                <span>{{ auth()->user()->role === 'owner' ? 'Riwayat Parkir' : 'Laporan' }}</span>
-            </a>
+            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
+                <div class="sidebar-label">Laporan</div>
+                <a href="{{ route('laporan.index') }}"
+                    class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>{{ auth()->user()->role === 'owner' ? 'Riwayat Parkir' : 'Laporan' }}</span>
+                </a>
             @endif
 
-            @if(auth()->user()->role === 'admin')
-            <div class="sidebar-label">Monitoring</div>
-            <a href="{{ route('log.index') }}" class="sidebar-link {{ request()->routeIs('log.*') ? 'active' : '' }}">
-                <i class="fas fa-history"></i>
-                <span>Log Aktivitas</span>
-            </a>
+            @if (auth()->user()->role === 'admin')
+                <div class="sidebar-label">Monitoring</div>
+                <a href="{{ route('log.index') }}"
+                    class="sidebar-link {{ request()->routeIs('log.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
+                    <span>Log Aktivitas</span>
+                </a>
             @endif
         </nav>
 
@@ -859,25 +990,25 @@
         </header>
 
         <div class="content-area">
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     {{ session('success') }}
                 </div>
             @endif
 
-            @if(session('error'))
+            @if (session('error'))
                 <div class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>
                     {{ session('error') }}
                 </div>
             @endif
 
-            @if($errors->any())
+            @if ($errors->any())
                 <div class="alert alert-error">
                     <i class="fas fa-exclamation-circle"></i>
                     <div>
-                        @foreach($errors->all() as $error)
+                        @foreach ($errors->all() as $error)
                             <div>{{ $error }}</div>
                         @endforeach
                     </div>
@@ -907,4 +1038,5 @@
 
     @yield('scripts')
 </body>
+
 </html>
