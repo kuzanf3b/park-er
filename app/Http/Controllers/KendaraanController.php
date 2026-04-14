@@ -50,13 +50,50 @@ class KendaraanController extends Controller
             ->orderBy('nama_lengkap')
             ->get();
 
-        return view('kendaraan.form', compact('owners'));
+        $existingKendaraanPlates = Kendaraan::query()
+            ->withCount([
+                'transaksis as parkir_aktif_count' => function ($query) {
+                    $query->where('status', 'masuk');
+                },
+            ])
+            ->get(['id_kendaraan', 'plat_nomor'])
+            ->map(function (Kendaraan $kendaraan) {
+                return [
+                    'id_kendaraan' => $kendaraan->id_kendaraan,
+                    'plat_nomor' => $this->normalizePlatNomor((string) $kendaraan->plat_nomor),
+                    'sedang_parkir' => ((int) $kendaraan->parkir_aktif_count) > 0,
+                ];
+            })
+            ->values();
+
+        return view('kendaraan.form', compact('owners', 'existingKendaraanPlates'));
     }
 
     public function store(Request $request)
     {
+        $normalizedPlatNomor = $this->normalizePlatNomor((string) $request->plat_nomor);
+        $request->merge(['plat_nomor' => $normalizedPlatNomor]);
+
         $request->validate([
-            'plat_nomor' => 'required|string|max:20|unique:tb_kendaraan,plat_nomor',
+            'plat_nomor' => [
+                'required',
+                'string',
+                'max:20',
+                function (string $attribute, mixed $value, $fail) {
+                    $kendaraanTerdaftar = Kendaraan::where('plat_nomor', (string) $value)->first();
+
+                    if (! $kendaraanTerdaftar) {
+                        return;
+                    }
+
+                    if ($kendaraanTerdaftar->isSedangParkir()) {
+                        $fail('Kendaraan dengan plat ini masih sedang parkir dan tidak bisa didaftarkan ulang.');
+                        return;
+                    }
+
+                    $fail('Kendaraan dengan plat ini sudah terdaftar.');
+                },
+            ],
             'jenis_kendaraan' => 'required|in:motor,mobil,truk,bus',
             'warna' => 'nullable|string|max:50',
             'pemilik' => 'nullable|string|max:100',
@@ -92,15 +129,55 @@ class KendaraanController extends Controller
             ->orderBy('nama_lengkap')
             ->get();
 
-        return view('kendaraan.form', compact('kendaraan', 'owners'));
+        $existingKendaraanPlates = Kendaraan::query()
+            ->where('id_kendaraan', '!=', $id)
+            ->withCount([
+                'transaksis as parkir_aktif_count' => function ($query) {
+                    $query->where('status', 'masuk');
+                },
+            ])
+            ->get(['id_kendaraan', 'plat_nomor'])
+            ->map(function (Kendaraan $kendaraan) {
+                return [
+                    'id_kendaraan' => $kendaraan->id_kendaraan,
+                    'plat_nomor' => $this->normalizePlatNomor((string) $kendaraan->plat_nomor),
+                    'sedang_parkir' => ((int) $kendaraan->parkir_aktif_count) > 0,
+                ];
+            })
+            ->values();
+
+        return view('kendaraan.form', compact('kendaraan', 'owners', 'existingKendaraanPlates'));
     }
 
     public function update(Request $request, int $id)
     {
         $kendaraan = Kendaraan::findOrFail($id);
 
+        $normalizedPlatNomor = $this->normalizePlatNomor((string) $request->plat_nomor);
+        $request->merge(['plat_nomor' => $normalizedPlatNomor]);
+
         $request->validate([
-            'plat_nomor' => 'required|string|max:20|unique:tb_kendaraan,plat_nomor,' . $id . ',id_kendaraan',
+            'plat_nomor' => [
+                'required',
+                'string',
+                'max:20',
+                function (string $attribute, mixed $value, $fail) use ($id) {
+                    $kendaraanTerdaftar = Kendaraan::where('plat_nomor', (string) $value)
+                        ->where('id_kendaraan', '!=', $id)
+                        ->first();
+
+                    if (! $kendaraanTerdaftar) {
+                        return;
+                    }
+
+                    if ($kendaraanTerdaftar->isSedangParkir()) {
+                        $fail('Kendaraan dengan plat ini masih sedang parkir dan tidak bisa dipakai.');
+                        return;
+                    }
+
+                    $fail('Kendaraan dengan plat ini sudah terdaftar.');
+                },
+            ],
             'jenis_kendaraan' => 'required|in:motor,mobil,truk,bus',
             'warna' => 'nullable|string|max:50',
             'pemilik' => 'nullable|string|max:100',
@@ -143,5 +220,10 @@ class KendaraanController extends Controller
 
         return redirect()->route('kendaraan.index')
             ->with('success', 'Kendaraan berhasil dihapus.');
+    }
+
+    private function normalizePlatNomor(string $platNomor): string
+    {
+        return strtoupper(trim(preg_replace('/\s+/', ' ', $platNomor) ?? $platNomor));
     }
 }

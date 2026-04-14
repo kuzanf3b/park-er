@@ -22,6 +22,22 @@ class DashboardController extends Controller
                 ->latest('created_at')
                 ->get();
 
+            $existingKendaraanPlates = Kendaraan::query()
+                ->withCount([
+                    'transaksis as parkir_aktif_count' => function ($query) {
+                        $query->where('status', 'masuk');
+                    },
+                ])
+                ->get(['id_kendaraan', 'plat_nomor'])
+                ->map(function (Kendaraan $kendaraan) {
+                    return [
+                        'id_kendaraan' => (int) $kendaraan->id_kendaraan,
+                        'plat_nomor' => strtoupper(trim((string) $kendaraan->plat_nomor)),
+                        'sedang_parkir' => ((int) $kendaraan->parkir_aktif_count) > 0,
+                    ];
+                })
+                ->values();
+
             $areas = AreaParkir::where('terisi', '<', DB::raw('kapasitas'))
                 ->orderBy('nama_area')
                 ->get();
@@ -30,7 +46,7 @@ class DashboardController extends Controller
                 ->orderBy('nama_lengkap')
                 ->get();
 
-            return view('dashboard.petugas', compact('transaksis', 'areas', 'owners'));
+            return view('dashboard.petugas', compact('transaksis', 'areas', 'owners', 'existingKendaraanPlates'));
         }
 
         if ($user->role === 'owner') {
