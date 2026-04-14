@@ -15,7 +15,7 @@
             <div class="form-group" style="width:420px;display:flex;justify-content:flex-end;margin-bottom:12px">
                 <label class="form-label" for="searchOperasional">Cari Plat / Pemilik</label>
                 <input type="text" id="searchOperasional" class="form-control"
-                    placeholder="Contoh: B 1234 ABC atau Budi">
+                    placeholder="Contoh: B 1234 ABC atau Khoi">
             </div>
             <div id="operasionalMessage" style="display:none"></div>
             <div class="table-container">
@@ -95,7 +95,14 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Plat Nomor *</label>
-                        <input type="text" name="plat_nomor" class="form-control" required>
+                        <div class="plate-warning-row">
+                            <input type="text" name="plat_nomor" id="platNomorMasukInput" class="form-control" required>
+                            <div id="platWarningMasuk" class="plate-warning-card is-hidden" role="status"
+                                aria-live="polite">
+                                <i id="platWarningMasukIcon" class="fas fa-exclamation-triangle"></i>
+                                <span id="platWarningMasukText"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Jenis Kendaraan *</label>
@@ -134,7 +141,7 @@
                 </div>
                 <div class="btn-group" style="justify-content:flex-end">
                     <button type="button" class="btn btn-outline" onclick="closeMasukModal()">Batal</button>
-                    <button type="submit" class="btn btn-success">Simpan</button>
+                    <button type="submit" id="submitMasukBtn" class="btn btn-success">Simpan</button>
                 </div>
             </form>
         </div>
@@ -177,9 +184,113 @@
         @endphp
         let cachedAreas = @json($cachedAreas);
         const ownerOptions = @json($ownerOptions);
+        let existingKendaraanPlates = @json($existingKendaraanPlates ?? []);
         let selectedKeluarId = null;
         let operasionalSearch = '';
         let refreshTimer = null;
+        let blockMasukSubmit = false;
+
+        function normalizePlate(plate) {
+            return String(plate || '').toUpperCase().replace(/\s+/g, ' ').trim();
+        }
+
+        function getMasukPlateWarningInfo(rawPlate) {
+            const plate = normalizePlate(rawPlate);
+            if (!plate) {
+                return {
+                    show: false,
+                    blockSubmit: false,
+                    type: '',
+                    message: ''
+                };
+            }
+
+            const registered = existingKendaraanPlates.find(item => normalizePlate(item.plat_nomor) === plate);
+
+            if (!registered) {
+                return {
+                    show: true,
+                    blockSubmit: false,
+                    type: 'success',
+                    message: 'Plat tersedia.'
+                };
+            }
+
+            if (registered.sedang_parkir) {
+                return {
+                    show: true,
+                    blockSubmit: true,
+                    type: 'warning',
+                    message: 'Plat sedang parkir.'
+                };
+            }
+
+            return {
+                show: true,
+                blockSubmit: true,
+                type: 'info',
+                message: 'Plat sudah terdaftar.'
+            };
+        }
+
+        function updateMasukPlateWarning(rawPlate) {
+            const warningBox = document.getElementById('platWarningMasuk');
+            const warningText = document.getElementById('platWarningMasukText');
+            const warningIcon = document.getElementById('platWarningMasukIcon');
+            const submitBtn = document.getElementById('submitMasukBtn');
+            const info = getMasukPlateWarningInfo(rawPlate);
+
+            blockMasukSubmit = info.blockSubmit;
+            submitBtn.disabled = info.blockSubmit;
+
+            if (!info.show) {
+                warningBox.classList.add('is-hidden');
+                warningBox.classList.remove('is-warning', 'is-info', 'is-success');
+                warningText.textContent = '';
+                warningIcon.className = 'fas fa-exclamation-triangle';
+                return;
+            }
+
+            warningText.textContent = info.message;
+            warningBox.classList.remove('is-warning', 'is-info', 'is-success');
+
+            if (info.type === 'warning') {
+                warningBox.classList.add('is-warning');
+                warningIcon.className = 'fas fa-exclamation-triangle';
+            } else if (info.type === 'info') {
+                warningBox.classList.add('is-info');
+                warningIcon.className = 'fas fa-info-circle';
+            } else {
+                warningBox.classList.add('is-success');
+                warningIcon.className = 'fas fa-check-circle';
+            }
+            warningBox.classList.remove('is-hidden');
+        }
+
+        function syncExistingPlateStatus(transaksis) {
+            const activePlates = new Set(
+                (transaksis || [])
+                .filter(item => item.status === 'masuk')
+                .map(item => normalizePlate(item.plat_nomor))
+                .filter(Boolean)
+            );
+
+            existingKendaraanPlates = existingKendaraanPlates.map(item => ({
+                ...item,
+                sedang_parkir: activePlates.has(normalizePlate(item.plat_nomor)),
+            }));
+
+            activePlates.forEach((plate) => {
+                const exists = existingKendaraanPlates.some(item => normalizePlate(item.plat_nomor) === plate);
+                if (!exists) {
+                    existingKendaraanPlates.push({
+                        id_kendaraan: 0,
+                        plat_nomor: plate,
+                        sedang_parkir: true,
+                    });
+                }
+            });
+        }
 
         function renderOwnerSuggestions(query = '') {
             const suggestionBox = document.getElementById('ownerSuggestions');
@@ -222,6 +333,8 @@
 
         function openMasukModal() {
             document.getElementById('masukModal').style.display = 'flex';
+            const platInput = document.getElementById('platNomorMasukInput');
+            updateMasukPlateWarning(platInput.value);
         }
 
         function closeMasukModal() {
@@ -229,6 +342,7 @@
             document.getElementById('masukForm').reset();
             document.getElementById('idAreaModal').innerHTML = '<option value="">-- Pilih Jenis Dulu --</option>';
             document.getElementById('ownerSuggestions').style.display = 'none';
+            updateMasukPlateWarning('');
         }
 
         function openKeluarModal() {
@@ -241,15 +355,16 @@
             document.getElementById('previewKeluarBody').innerHTML = '';
         }
 
-        function showMessage(type, text) {
+        function showMessage(type, text, durationMs = null) {
             const box = document.getElementById('operasionalMessage');
             box.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
             box.innerHTML =
                 `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${text}</span>`;
             box.style.display = 'flex';
+            const timeout = Number(durationMs ?? (type === 'error' ? 8000 : 6000));
             setTimeout(() => {
                 box.style.display = 'none';
-            }, 3500);
+            }, timeout);
         }
 
         function filterAreaOptions() {
@@ -273,6 +388,7 @@
                 const response = await fetch(`{{ route('operasional.aktif-json') }}${query}`);
                 const data = await response.json();
                 cachedAreas = data.areas || [];
+                syncExistingPlateStatus(data.transaksis || []);
 
                 const rows = (data.transaksis || []).map((item, index) => `
                 <tr>
@@ -309,12 +425,24 @@
             } catch (e) {
                 showMessage('error', 'Gagal memuat data operasional.');
             }
+
+            const platInput = document.getElementById('platNomorMasukInput');
+            if (platInput) {
+                updateMasukPlateWarning(platInput.value);
+            }
         }
 
         async function submitMasuk(event) {
             event.preventDefault();
             const form = document.getElementById('masukForm');
             const formData = new FormData(form);
+
+            if (blockMasukSubmit) {
+                const platInput = document.getElementById('platNomorMasukInput');
+                updateMasukPlateWarning(platInput.value);
+                platInput.focus();
+                return;
+            }
 
             if (!formData.get('id_user')) {
                 showMessage('error', 'Silakan pilih akun owner dari daftar saran.');
@@ -419,6 +547,15 @@
 
         const ownerSearchInput = document.getElementById('ownerSearchInput');
         const ownerSuggestionBox = document.getElementById('ownerSuggestions');
+        const platNomorMasukInput = document.getElementById('platNomorMasukInput');
+
+        platNomorMasukInput.addEventListener('input', () => {
+            updateMasukPlateWarning(platNomorMasukInput.value);
+        });
+
+        platNomorMasukInput.addEventListener('blur', () => {
+            updateMasukPlateWarning(platNomorMasukInput.value);
+        });
 
         ownerSearchInput.addEventListener('focus', () => {
             renderOwnerSuggestions(ownerSearchInput.value);
@@ -491,6 +628,52 @@
             cursor: pointer;
         }
 
+        .plate-warning-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+        }
+
+        .plate-warning-card {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .plate-warning-card i {
+            margin-top: 2px;
+        }
+
+        .plate-warning-card.is-hidden {
+            display: none;
+        }
+
+        .plate-warning-card.is-warning {
+            background: #fff7ed;
+            border-color: #fed7aa;
+            color: #9a3412;
+        }
+
+        .plate-warning-card.is-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1e3a8a;
+        }
+
+        .plate-warning-card.is-success {
+            background: #ecfdf5;
+            border-color: #86efac;
+            color: #166534;
+        }
+
+        .plate-warning-card {
+            width: 100%;
+        }
+
         .suggestion-item:last-child {
             border-bottom: 0;
         }
@@ -502,6 +685,12 @@
         .suggestion-item:disabled {
             color: var(--text-muted);
             cursor: not-allowed;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
         }
     </style>
 @endsection

@@ -481,6 +481,24 @@
             background: var(--surface-3);
         }
 
+        .btn:disabled,
+        .btn[disabled] {
+            background: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+            opacity: 1;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn:disabled:hover,
+        .btn[disabled]:hover {
+            background: #cbd5e1;
+            color: #64748b;
+            box-shadow: none;
+            transform: none;
+        }
+
         .btn-group {
             display: flex;
             gap: 8px;
