@@ -117,6 +117,11 @@ class KendaraanController extends Controller
 
         $this->logService->log((int) Auth::id(), 'Mendaftarkan kendaraan: ' . $kendaraan->plat_nomor);
 
+        if ($request->boolean('kembali_ke_kilat') && Auth::user()?->role === 'petugas') {
+            return redirect()->route('operasional.kilat')
+                ->with('success', 'Kendaraan berhasil didaftarkan.');
+        }
+
         return redirect()->route('kendaraan.index')
             ->with('success', 'Kendaraan berhasil didaftarkan.');
     }

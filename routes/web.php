@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
 
     // AJAX operasional untuk petugas (single page workflow)
     Route::middleware('role:petugas')->group(function () {
+        Route::get('/operasional/kilat', [TransaksiController::class, 'kilat'])->name('operasional.kilat');
+        Route::post('/operasional/kilat', [TransaksiController::class, 'processKilat'])->name('operasional.process-kilat');
         Route::get('/operasional/aktif', [TransaksiController::class, 'aktifJson'])->name('operasional.aktif-json');
         Route::post('/operasional/masuk', [TransaksiController::class, 'storeMasukJson'])->name('operasional.store-masuk-json');
         Route::get('/operasional/{id}/preview-keluar', [TransaksiController::class, 'previewKeluarJson'])->name('operasional.preview-keluar-json');

@@ -21,6 +21,121 @@ class TransaksiController extends Controller
         $this->parkingService = $parkingService;
     }
 
+    public function kilat(Request $request)
+    {
+        $registeredPlates = Kendaraan::query()
+            ->orderBy('plat_nomor')
+            ->pluck('plat_nomor')
+            ->map(fn($plate) => $this->normalizePlate((string) $plate))
+            ->filter()
+            ->values();
+
+        $owners = User::where('role', 'owner')
+            ->where('status_aktif', true)
+            ->orderBy('nama_lengkap')
+            ->get(['id_user', 'nama_lengkap', 'username']);
+
+        $ownerOptions = $owners
+            ->map(function (User $owner) {
+                return [
+                    'id_user' => (int) $owner->id_user,
+                    'nama_lengkap' => (string) $owner->nama_lengkap,
+                    'username' => (string) $owner->username,
+                ];
+            })
+            ->values();
+
+        $existingKendaraanPlates = Kendaraan::query()
+            ->withCount([
+                'transaksis as parkir_aktif_count' => function ($query) {
+                    $query->where('status', 'masuk');
+                },
+            ])
+            ->get(['id_kendaraan', 'plat_nomor'])
+            ->map(function (Kendaraan $kendaraan) {
+                return [
+                    'id_kendaraan' => (int) $kendaraan->id_kendaraan,
+                    'plat_nomor' => $this->normalizePlate((string) $kendaraan->plat_nomor),
+                    'sedang_parkir' => ((int) $kendaraan->parkir_aktif_count) > 0,
+                ];
+            })
+            ->values();
+
+        $aktivitas = Transaksi::with(['kendaraan', 'areaParkir'])
+            ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
+            ->latest('waktu_masuk')
+            ->take(40)
+            ->get()
+            ->map(function (Transaksi $transaksi) {
+                return [
+                    'plat_nomor' => $transaksi->kendaraan?->plat_nomor ?? '-',
+                    'area' => $transaksi->areaParkir?->nama_area ?? '-',
+                    'waktu_masuk' => $transaksi->waktu_masuk?->format('d/m/Y H:i') ?? '-',
+                    'waktu_keluar' => $transaksi->waktu_keluar?->format('d/m/Y H:i') ?? '-',
+                    'status' => $transaksi->status,
+                ];
+            });
+
+        return view('transaksi.kilat', compact('registeredPlates', 'aktivitas', 'owners', 'ownerOptions', 'existingKendaraanPlates'));
+    }
+
+    public function processKilat(Request $request)
+    {
+        $request->validate([
+            'plat_nomor' => 'required|string|max:20',
+        ]);
+
+        $plate = $this->normalizePlate((string) $request->plat_nomor);
+
+        $kendaraan = Kendaraan::where('plat_nomor', $plate)->first();
+        if (! $kendaraan) {
+            return redirect()->route('operasional.kilat')
+                ->withInput()
+                ->with('error', 'Plat belum terdaftar. Daftarkan kendaraan dulu.');
+        }
+
+        $transaksiAktif = Transaksi::where('id_kendaraan', $kendaraan->id_kendaraan)
+            ->where('status', 'masuk')
+            ->latest('waktu_masuk')
+            ->first();
+
+        try {
+            if ($transaksiAktif) {
+                $this->parkingService->vehicleExit((int) $transaksiAktif->id_parkir, (int) Auth::id());
+
+                return redirect()->route('operasional.kilat')
+                    ->with('success', 'Plat ' . $plate . ' berhasil diproses keluar.');
+            }
+
+            $area = AreaParkir::where('jenis_kendaraan', $kendaraan->jenis_kendaraan)
+                ->where('terisi', '<', DB::raw('kapasitas'))
+                ->orderBy('nama_area')
+                ->first();
+
+            if (! $area) {
+                return redirect()->route('operasional.kilat')
+                    ->withInput()
+                    ->with('error', 'Tidak ada area tersedia untuk jenis ' . $kendaraan->jenis_kendaraan . '.');
+            }
+
+            $this->parkingService->vehicleEntry([
+                'plat_nomor' => $plate,
+                'jenis_kendaraan' => $kendaraan->jenis_kendaraan,
+                'id_area' => (int) $area->id_area,
+                'warna' => $kendaraan->warna,
+                'pemilik' => $kendaraan->pemilik,
+                'id_user' => (int) $kendaraan->id_user,
+            ], (int) Auth::id());
+
+            return redirect()->route('operasional.kilat')
+                ->with('success', 'Plat ' . $plate . ' berhasil diproses masuk di area ' . $area->nama_area . '.');
+        } catch (\Throwable $e) {
+            return redirect()->route('operasional.kilat')
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
     public function index(Request $request)
     {
         $query = Transaksi::with(['kendaraan', 'tarif', 'areaParkir', 'user']);
@@ -249,5 +364,10 @@ class TransaksiController extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         }
+    }
+
+    private function normalizePlate(string $plate): string
+    {
+        return strtoupper(trim((string) preg_replace('/\s+/', ' ', $plate)));
     }
 }

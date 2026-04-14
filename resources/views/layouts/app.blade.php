@@ -928,6 +928,15 @@
                 </a>
             @endif
 
+            @if (auth()->user()->role === 'petugas')
+                <div class="sidebar-label">Operasional</div>
+                <a href="{{ route('operasional.kilat') }}"
+                    class="sidebar-link {{ request()->routeIs('operasional.kilat') ? 'active' : '' }}">
+                    <i class="fas fa-bolt"></i>
+                    <span>Super Cepat Kilat</span>
+                </a>
+            @endif
+
             @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
                 <a href="{{ route('kendaraan.index') }}"
                     class="sidebar-link {{ request()->routeIs('kendaraan.*') ? 'active' : '' }}">
