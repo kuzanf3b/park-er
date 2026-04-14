@@ -129,15 +129,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Pemilik</label>
-                    <input type="text" name="pemilik" class="form-control">
-                </div>
-                <div class="form-group">
                     <label class="form-label">Akun Owner Kendaraan *</label>
                     <input type="hidden" name="id_user" id="selectedOwnerId" required>
-                    <input type="text" id="ownerSearchInput" class="form-control"
-                        placeholder="Cari nama owner atau username..." autocomplete="off" required>
+                    <input type="text" id="ownerSearchInput" class="form-control" placeholder="Klik untuk pilih owner..."
+                        autocomplete="off" required>
                     <div id="ownerSuggestions" class="suggestions-list" style="display:none"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pemilik</label>
+                    <input type="text" name="pemilik" id="pemilikMasukInput" class="form-control"
+                        placeholder="Terisi otomatis dari owner" readonly>
                 </div>
                 <div class="btn-group" style="justify-content:flex-end">
                     <button type="button" class="btn btn-outline" onclick="closeMasukModal()">Batal</button>
@@ -328,6 +329,7 @@
 
             document.getElementById('selectedOwnerId').value = idUser;
             document.getElementById('ownerSearchInput').value = `${owner.nama_lengkap} (${owner.username})`;
+            document.getElementById('pemilikMasukInput').value = owner.nama_lengkap;
             document.getElementById('ownerSuggestions').style.display = 'none';
         }
 
@@ -547,6 +549,8 @@
 
         const ownerSearchInput = document.getElementById('ownerSearchInput');
         const ownerSuggestionBox = document.getElementById('ownerSuggestions');
+        const selectedOwnerIdInput = document.getElementById('selectedOwnerId');
+        const pemilikMasukInput = document.getElementById('pemilikMasukInput');
         const platNomorMasukInput = document.getElementById('platNomorMasukInput');
 
         platNomorMasukInput.addEventListener('input', () => {
@@ -561,8 +565,14 @@
             renderOwnerSuggestions(ownerSearchInput.value);
         });
 
+        ownerSearchInput.addEventListener('click', (event) => {
+            event.stopPropagation();
+            renderOwnerSuggestions(ownerSearchInput.value);
+        });
+
         ownerSearchInput.addEventListener('input', () => {
-            document.getElementById('selectedOwnerId').value = '';
+            selectedOwnerIdInput.value = '';
+            pemilikMasukInput.value = '';
             renderOwnerSuggestions(ownerSearchInput.value);
         });
 
@@ -577,7 +587,8 @@
         });
 
         document.addEventListener('click', (event) => {
-            if (!ownerSuggestionBox.contains(event.target) && event.target !== ownerSearchInput) {
+            const ownerFieldContainer = ownerSearchInput.closest('.form-group');
+            if (!ownerFieldContainer || !ownerFieldContainer.contains(event.target)) {
                 ownerSuggestionBox.style.display = 'none';
             }
         });
@@ -615,6 +626,12 @@
             max-height: 220px;
             overflow-y: auto;
             box-shadow: var(--shadow-md);
+        }
+
+        #pemilikMasukInput[readonly] {
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            cursor: not-allowed;
         }
 
         .suggestion-item {
