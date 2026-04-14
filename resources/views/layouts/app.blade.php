@@ -933,7 +933,7 @@
                 <a href="{{ route('operasional.kilat') }}"
                     class="sidebar-link {{ request()->routeIs('operasional.kilat') ? 'active' : '' }}">
                     <i class="fas fa-bolt"></i>
-                    <span>Super Cepat Kilat</span>
+                    <span>Kilat</span>
                 </a>
             @endif
 

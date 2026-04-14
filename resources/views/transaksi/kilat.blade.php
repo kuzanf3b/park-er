@@ -1,21 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Super Cepat Kilat')
+@section('title', 'Kilat')
 
 @section('content')
     <div class="card" style="margin-bottom:16px;">
         <div class="card-header">
             <h3 style="display:flex;align-items:center;gap:8px;">
                 <i class="fas fa-bolt" style="color:#f59e0b;"></i>
-                Super Cepat Kilat
+                Kilat
             </h3>
         </div>
         <div class="card-body">
-            <p style="margin-bottom:10px; color:var(--text-secondary);">
-                Input plat sekali untuk proses cepat. Jika status masih parkir maka otomatis keluar, jika belum parkir maka
-                otomatis masuk.
-            </p>
-
             @if (session('success'))
                 <div class="alert alert-success" style="margin-bottom:12px;">
                     <i class="fas fa-check-circle"></i>
