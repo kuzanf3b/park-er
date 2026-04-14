@@ -18,7 +18,7 @@
                 style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
                 <div style="flex:1;min-width:200px">
                     <label class="form-label">Cari</label>
-                    <input type="text" name="search" class="form-control" placeholder="Plat nomor / pemilik..."
+                    <input type="text" name="search" class="form-control" placeholder="Plat nomor"
                         value="{{ request('search') }}">
                 </div>
                 <div style="min-width:150px">
@@ -48,7 +48,6 @@
                         <th>Plat Nomor</th>
                         <th>Jenis</th>
                         <th>Warna</th>
-                        <th>Pemilik</th>
                         <th>Status</th>
                         @if (auth()->user()->role === 'petugas' || auth()->user()->role === 'admin')
                             <th>Aksi</th>
@@ -62,7 +61,6 @@
                             <td><strong>{{ $k->plat_nomor }}</strong></td>
                             <td><span class="badge badge-primary">{{ ucfirst($k->jenis_kendaraan) }}</span></td>
                             <td>{{ $k->warna }}</td>
-                            <td>{{ $k->pemilik }}</td>
                             <td>
                                 @if ($k->isSedangParkir())
                                     <span class="badge badge-info"><i class="fas fa-circle" style="font-size:6px"></i>Sedang
