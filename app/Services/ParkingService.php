@@ -40,8 +40,8 @@ class ParkingService
                 throw new \Exception('Kendaraan dengan plat ' . $kendaraan->plat_nomor . ' masih di area parkir.');
             }
 
-            // Cari area parkir yang sesuai
-            $area = AreaParkir::find($data['id_area']);
+            // Cari area parkir yang sesuai (menggunakan Pessimistic Locking untuk mencegah race condition)
+            $area = AreaParkir::lockForUpdate()->find($data['id_area']);
             if (!$area) {
                 throw new \Exception('Area parkir tidak ditemukan.');
             }
@@ -97,9 +97,10 @@ class ParkingService
             $waktuKeluar = now();
             $waktuMasuk = $transaksi->waktu_masuk;
 
-            // Hitung durasi (pembulatan ke atas)
+            // Hitung durasi (pembulatan ke atas dengan grace period 5 menit)
             $durasiMenit = $waktuMasuk->diffInMinutes($waktuKeluar);
-            $durasi = (int) ceil($durasiMenit / 60);
+            $durasiToleransi = max(0, $durasiMenit - 5);
+            $durasi = (int) ceil($durasiToleransi / 60);
             if ($durasi < 1) $durasi = 1;
 
             // Hitung biaya
@@ -169,8 +170,10 @@ class ParkingService
         $waktuKeluar = now();
         $waktuMasuk = $transaksi->waktu_masuk;
 
+        // Hitung durasi dengan grace period 5 menit
         $durasiMenit = $waktuMasuk->diffInMinutes($waktuKeluar);
-        $durasi = (int) ceil($durasiMenit / 60);
+        $durasiToleransi = max(0, $durasiMenit - 5);
+        $durasi = (int) ceil($durasiToleransi / 60);
         if ($durasi < 1) $durasi = 1;
 
         $tarifPerJam = (int) $transaksi->tarif->tarif_per_jam;
