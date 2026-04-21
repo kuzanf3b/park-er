@@ -11,13 +11,6 @@
             </h3>
         </div>
         <div class="card-body">
-            @if (session('success'))
-                <div class="alert alert-success" style="margin-bottom:12px;">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            @endif
-
             @if (session('error'))
                 <div class="alert alert-error" style="margin-bottom:12px;">
                     <i class="fas fa-exclamation-circle"></i>
@@ -222,7 +215,7 @@
                     kilatPlateInfo?.classList.add('is-warning');
                     if (kilatPlateInfoIcon) kilatPlateInfoIcon.className = 'fas fa-exclamation-triangle';
                     if (kilatPlateInfoText) kilatPlateInfoText.textContent =
-                    'Plat belum terdaftar. Daftarkan dulu.';
+                        'Plat belum terdaftar. Daftarkan dulu.';
                     submitBtn.disabled = true;
                     return;
                 }
