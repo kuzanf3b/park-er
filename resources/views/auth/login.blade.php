@@ -83,7 +83,7 @@
             <div class="login-brand-icon">
                 <i class="fas fa-car"></i>
             </div>
-            <h1>Parkir App</h1>
+            <h1>Park-Er</h1>
             <p class="text-muted">Sistem Manajemen Parkir</p>
         </div>
 
