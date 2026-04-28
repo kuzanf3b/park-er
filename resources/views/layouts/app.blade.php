@@ -904,120 +904,120 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-brand-icon">
-                <i class="fas fa-car"></i>
-            </div>
-            <div>
-                <h2>Parkir App</h2>
-                <small>Management System</small>
-            </div>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="sidebar-label">Menu Utama</div>
-            <a href="{{ route('dashboard') }}"
-                class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i>
-                <span>Dashboard</span>
-            </a>
-
-            @if (auth()->user()->role === 'admin')
-                <div class="sidebar-label">Operasional</div>
-                <a href="{{ route('transaksi.index') }}"
-                    class="sidebar-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Transaksi</span>
-                </a>
-            @endif
-
-            @if (auth()->user()->role === 'petugas')
-                <div class="sidebar-label">Operasional</div>
-                <a href="{{ route('operasional.kilat') }}"
-                    class="sidebar-link {{ request()->routeIs('operasional.kilat') ? 'active' : '' }}">
-                    <i class="fas fa-bolt"></i>
-                    <span>Kilat</span>
-                </a>
-            @endif
-
-            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
-                <a href="{{ route('kendaraan.index') }}"
-                    class="sidebar-link {{ request()->routeIs('kendaraan.*') ? 'active' : '' }}">
-                    <i class="fas fa-motorcycle"></i>
-                    <span>{{ auth()->user()->role === 'owner' ? 'Kendaraan Saya' : 'Kendaraan' }}</span>
-                </a>
-            @endif
-
-            @if (auth()->user()->role === 'admin')
-                <div class="sidebar-label">Pengaturan</div>
-                <a href="{{ route('area-parkir.index') }}"
-                    class="sidebar-link {{ request()->routeIs('area-parkir.*') ? 'active' : '' }}">
-                    <i class="fas fa-parking"></i>
-                    <span>Area Parkir</span>
-                </a>
-                <a href="{{ route('tarif.index') }}"
-                    class="sidebar-link {{ request()->routeIs('tarif.*') ? 'active' : '' }}">
-                    <i class="fas fa-tags"></i>
-                    <span>Tarif</span>
-                </a>
-                <a href="{{ route('users.index') }}"
-                    class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    <span>Manajemen User</span>
-                </a>
-            @endif
-
-            @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
-                <div class="sidebar-label">Laporan</div>
-                <a href="{{ route('laporan.index') }}"
-                    class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>{{ auth()->user()->role === 'owner' ? 'Riwayat Parkir' : 'Laporan' }}</span>
-                </a>
-            @endif
-
-            @if (auth()->user()->role === 'admin')
-                <div class="sidebar-label">Monitoring</div>
-                <a href="{{ route('log.index') }}"
-                    class="sidebar-link {{ request()->routeIs('log.*') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i>
-                    <span>Log Aktivitas</span>
-                </a>
-            @endif
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="sidebar-avatar">
-                    {{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}
+                    <i class="fas fa-car"></i>
                 </div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ auth()->user()->nama_lengkap }}</div>
-                    <div class="sidebar-user-role">{{ auth()->user()->role }}</div>
+                <div>
+                    <h2>Parkir App</h2>
+                    <small>Management System</small>
                 </div>
             </div>
-        </div>
-    </aside>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-label">Menu Utama</div>
+                <a href="{{ route('dashboard') }}"
+                    class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                @if (auth()->user()->role === 'admin')
+                    <div class="sidebar-label">Operasional</div>
+                    <a href="{{ route('transaksi.index') }}"
+                        class="sidebar-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Transaksi</span>
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'petugas')
+                    <div class="sidebar-label">Operasional</div>
+                    <a href="{{ route('operasional.kilat') }}"
+                        class="sidebar-link {{ request()->routeIs('operasional.kilat') ? 'active' : '' }}">
+                        <i class="fas fa-bolt"></i>
+                        <span>Kilat</span>
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
+                    <a href="{{ route('kendaraan.index') }}"
+                        class="sidebar-link {{ request()->routeIs('kendaraan.*') ? 'active' : '' }}">
+                        <i class="fas fa-motorcycle"></i>
+                        <span>{{ auth()->user()->role === 'owner' ? 'Kendaraan Saya' : 'Kendaraan' }}</span>
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'admin')
+                    <div class="sidebar-label">Pengaturan</div>
+                    <a href="{{ route('area-parkir.index') }}"
+                        class="sidebar-link {{ request()->routeIs('area-parkir.*') ? 'active' : '' }}">
+                        <i class="fas fa-parking"></i>
+                        <span>Area Parkir</span>
+                    </a>
+                    <a href="{{ route('tarif.index') }}"
+                        class="sidebar-link {{ request()->routeIs('tarif.*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span>Tarif</span>
+                    </a>
+                    <a href="{{ route('users.index') }}"
+                        class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>Manajemen User</span>
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
+                    <div class="sidebar-label">Laporan</div>
+                    <a href="{{ route('laporan.index') }}"
+                        class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>{{ auth()->user()->role === 'owner' ? 'Riwayat Parkir' : 'Laporan' }}</span>
+                    </a>
+                @endif
+
+                @if (auth()->user()->role === 'admin')
+                    <div class="sidebar-label">Monitoring</div>
+                    <a href="{{ route('log.index') }}"
+                        class="sidebar-link {{ request()->routeIs('log.*') ? 'active' : '' }}">
+                        <i class="fas fa-history"></i>
+                        <span>Log Aktivitas</span>
+                    </a>
+                @endif
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">
+                        {{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}
+                    </div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">{{ auth()->user()->nama_lengkap }}</div>
+                        <div class="sidebar-user-role">{{ auth()->user()->role }}</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
     @endauth
 
     <!-- Main Content -->
     <main class="main-content" @guest style="margin-left: 0;" @endguest>
         @auth
-        <header class="topbar">
-            <div class="topbar-left">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">@yield('title', 'Dashboard')</h1>
-            </div>
-            <div class="topbar-right">
-                <form action="{{ route('logout') }}" method="POST" style="display:inline">
-                    @csrf
-                    <button type="submit" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Keluar
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
                     </button>
-                </form>
-            </div>
-        </header>
+                    <h1 class="page-title">@yield('title', 'Dashboard')</h1>
+                </div>
+                <div class="topbar-right">
+                    <form action="{{ route('logout') }}" method="POST" style="display:inline">
+                        @csrf
+                        <button type="submit" class="btn-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Keluar
+                        </button>
+                    </form>
+                </div>
+            </header>
         @endauth
 
         <div class="content-area">
