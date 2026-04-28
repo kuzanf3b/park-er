@@ -896,13 +896,14 @@
 </head>
 
 <body>
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    @auth
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="sidebar-brand-icon">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
                 <i class="fas fa-car"></i>
             </div>
             <div>
@@ -995,9 +996,11 @@
             </div>
         </div>
     </aside>
+    @endauth
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" @guest style="margin-left: 0;" @endguest>
+        @auth
         <header class="topbar">
             <div class="topbar-left">
                 <button class="menu-toggle" onclick="toggleSidebar()">
@@ -1015,6 +1018,7 @@
                 </form>
             </div>
         </header>
+        @endauth
 
         <div class="content-area">
             @if (session('success'))
