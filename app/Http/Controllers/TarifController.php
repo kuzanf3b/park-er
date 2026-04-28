@@ -17,7 +17,7 @@ class TarifController extends Controller
 
     public function index()
     {
-        $tarifs = Tarif::all();
+        $tarifs = Tarif::paginate(10);
         return view('tarif.index', compact('tarifs'));
     }
 

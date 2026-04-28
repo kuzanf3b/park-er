@@ -17,7 +17,7 @@ class AreaParkirController extends Controller
 
     public function index()
     {
-        $areas = AreaParkir::all();
+        $areas = AreaParkir::paginate(10);
         return view('area-parkir.index', compact('areas'));
     }
 

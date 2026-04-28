@@ -36,7 +36,7 @@
                         @endforeach
                     </datalist>
                     <small style="display:block;margin-top:6px;color:var(--text-muted);">
-                        Jika plat belum ada, silakan daftar dulu di menu kendaraan.
+                        Hanya Plat Nomor yang tercatat, sistem akan otomatis menentukan jenis dan area.
                     </small>
                 </div>
 

@@ -58,4 +58,8 @@
             </div>
         @endforeach
     </div>
+
+    <div style="margin-top: 1.5rem">
+        {{ $areas->links() }}
+    </div>
 @endsection

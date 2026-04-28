@@ -174,21 +174,30 @@ class TransaksiController extends Controller
     public function storeMasuk(Request $request)
     {
         $request->validate([
-            'plat_nomor' => 'required|string|max:20',
-            'jenis_kendaraan' => 'required|in:motor,mobil,truk,bus',
-            'id_area' => 'required|exists:tb_area_parkir,id_area',
-            'warna' => 'nullable|string|max:50',
-            'pemilik' => 'nullable|string|max:100',
-            'id_user' => [
-                'required',
-                Rule::exists('tb_user', 'id_user')->where(function ($query) {
-                    $query->where('role', 'owner')->where('status_aktif', true);
-                }),
-            ],
+            'plat_nomor' => 'required|string|max:20|exists:tb_kendaraan,plat_nomor',
         ]);
 
         try {
-            $this->parkingService->vehicleEntry($request->all(), (int) Auth::id());
+            $kendaraan = Kendaraan::where('plat_nomor', $request->plat_nomor)->firstOrFail();
+
+            $area = AreaParkir::where('jenis_kendaraan', $kendaraan->jenis_kendaraan)
+                ->whereColumn('terisi', '<', 'kapasitas')
+                ->first();
+
+            if (!$area) {
+                return back()->withErrors(['error' => 'Area parkir penuh atau tidak tersedia untuk jenis kendaraan ini.'])->withInput();
+            }
+
+            $data = [
+                'plat_nomor' => $kendaraan->plat_nomor,
+                'jenis_kendaraan' => $kendaraan->jenis_kendaraan,
+                'id_area' => $area->id_area,
+                'warna' => $kendaraan->warna,
+                'pemilik' => $kendaraan->pemilik,
+                'id_user' => Auth::id()
+            ];
+
+            $this->parkingService->vehicleEntry($data, (int) Auth::id());
             return redirect()->route('transaksi.index')
                 ->with('success', 'Kendaraan ' . strtoupper($request->plat_nomor) . ' berhasil masuk.');
         } catch (\Exception $e) {
@@ -300,21 +309,38 @@ class TransaksiController extends Controller
     public function storeMasukJson(Request $request)
     {
         $request->validate([
-            'plat_nomor' => 'required|string|max:20',
-            'jenis_kendaraan' => 'required|in:motor,mobil,truk,bus',
-            'id_area' => 'required|exists:tb_area_parkir,id_area',
-            'warna' => 'nullable|string|max:50',
-            'pemilik' => 'nullable|string|max:100',
-            'id_user' => [
-                'required',
-                Rule::exists('tb_user', 'id_user')->where(function ($query) {
-                    $query->where('role', 'owner')->where('status_aktif', true);
-                }),
-            ],
+            'plat_nomor' => 'required|string|max:20|exists:tb_kendaraan,plat_nomor',
         ]);
 
+        $plate = $this->normalizePlate((string) $request->plat_nomor);
+
+        $kendaraan = Kendaraan::where('plat_nomor', $plate)->first();
+        if (!$kendaraan) {
+            return response()->json([
+                'message' => 'Plat nomor tidak terdaftar.',
+            ], 422);
+        }
+
+        $area = AreaParkir::where('jenis_kendaraan', $kendaraan->jenis_kendaraan)
+            ->where('terisi', '<', DB::raw('kapasitas'))
+            ->first();
+
+        if (!$area) {
+            return response()->json([
+                'message' => 'Area parkir penuh atau tidak tersedia untuk jenis kendaraan ini.',
+            ], 422);
+        }
+
         try {
-            $transaksi = $this->parkingService->vehicleEntry($request->all(), (int) Auth::id());
+            $data = [
+                'plat_nomor' => $kendaraan->plat_nomor,
+                'jenis_kendaraan' => $kendaraan->jenis_kendaraan,
+                'id_area' => $area->id_area,
+                'warna' => $kendaraan->warna,
+                'pemilik' => $kendaraan->pemilik,
+                'id_user' => (int) $kendaraan->id_user,
+            ];
+            $transaksi = $this->parkingService->vehicleEntry($data, (int) Auth::id());
 
             return response()->json([
                 'message' => 'Kendaraan berhasil masuk.',

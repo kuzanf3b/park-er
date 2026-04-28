@@ -36,6 +36,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="card-body" style="padding:12px 24px;border-top:1px solid var(--border)">
+            {{ $tarifs->links() }}
+        </div>
         <div class="card-body" style="padding:12px 24px;background:var(--surface-2);border-top:1px solid var(--border)">
             <p style="font-size:12px;color:var(--text-muted)">
                 <i class="fas fa-info-circle"></i> Denda berlaku untuk durasi parkir melebihi 2 jam pertama. Tarif denda =
