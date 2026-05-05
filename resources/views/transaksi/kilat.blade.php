@@ -132,7 +132,7 @@
                     <tbody>
                         @forelse ($aktivitas as $row)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ ($aktivitas->currentPage() - 1) * $aktivitas->perPage() + $loop->iteration }}</td>
                                 <td><strong>{{ $row['plat_nomor'] }}</strong></td>
                                 <td>{{ $row['area'] }}</td>
                                 <td>{{ $row['waktu_masuk'] }}</td>
@@ -163,6 +163,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="mt-3" style="display: flex; justify-content: center;">
+                    {{ $aktivitas->links('pagination::bootstrap-4') }}
+                </div>
             </div>
         </div>
     </div>

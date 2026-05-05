@@ -84,6 +84,9 @@
                     </tbody>
                 </table>
             </div>
+            <div id="paginationContainer" style="margin-top: 15px; display: flex; justify-content: center; gap: 5px;">
+                {{ $transaksis->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 
@@ -92,57 +95,19 @@
             <h3 style="margin-bottom:12px">Kendaraan Masuk</h3>
             <form id="masukForm" onsubmit="submitMasuk(event)">
                 @csrf
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Plat Nomor *</label>
-                        <div class="plate-warning-row">
-                            <input type="text" name="plat_nomor" id="platNomorMasukInput" class="form-control" required>
-                            <div id="platWarningMasuk" class="plate-warning-card is-hidden" role="status"
-                                aria-live="polite">
-                                <i id="platWarningMasukIcon" class="fas fa-exclamation-triangle"></i>
-                                <span id="platWarningMasukText"></span>
-                            </div>
+                <div class="form-group">
+                    <label class="form-label">Plat Nomor *</label>
+                    <div class="plate-warning-row">
+                        <input type="text" name="plat_nomor" id="platNomorMasukInput" class="form-control" required>
+                        <div id="platWarningMasuk" class="plate-warning-card is-hidden" role="status" aria-live="polite">
+                            <i id="platWarningMasukIcon" class="fas fa-exclamation-triangle"></i>
+                            <span id="platWarningMasukText"></span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Jenis Kendaraan *</label>
-                        <select name="jenis_kendaraan" id="jenisKendaraanModal" class="form-control" required
-                            onchange="filterAreaOptions()">
-                            <option value="">-- Pilih --</option>
-                            <option value="motor">Motor</option>
-                            <option value="mobil">Mobil</option>
-                            <option value="truk">Truk</option>
-                            <option value="bus">Bus</option>
-                        </select>
-                    </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Area Parkir *</label>
-                        <select name="id_area" id="idAreaModal" class="form-control" required>
-                            <option value="">-- Pilih Jenis Dulu --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Warna</label>
-                        <input type="text" name="warna" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Akun Owner Kendaraan *</label>
-                    <input type="hidden" name="id_user" id="selectedOwnerId" required>
-                    <input type="text" id="ownerSearchInput" class="form-control" placeholder="Klik untuk pilih owner..."
-                        autocomplete="off" required>
-                    <div id="ownerSuggestions" class="suggestions-list" style="display:none"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Pemilik</label>
-                    <input type="text" name="pemilik" id="pemilikMasukInput" class="form-control"
-                        placeholder="Terisi otomatis dari owner" readonly>
-                </div>
-                <div class="btn-group" style="justify-content:flex-end">
+                <div class="btn-group" style="justify-content:flex-end; margin-top:10px;">
                     <button type="button" class="btn btn-outline" onclick="closeMasukModal()">Batal</button>
-                    <button type="submit" id="submitMasukBtn" class="btn btn-success">Simpan</button>
+                    <button type="submit" id="submitMasukBtn" class="btn btn-success">Masuk</button>
                 </div>
             </form>
         </div>
@@ -189,6 +154,7 @@
         let selectedKeluarId = null;
         let operasionalSearch = '';
         let refreshTimer = null;
+        let currentPage = 1;
         let blockMasukSubmit = false;
 
         function normalizePlate(plate) {
@@ -384,17 +350,61 @@
             areaSelect.innerHTML = options.join('');
         }
 
+        function goToPage(page) {
+            currentPage = page;
+            refreshOperasional();
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('paginationContainer');
+            if (!container) return;
+
+            if (!pagination || pagination.last_page <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '<ul class="pagination mb-0">';
+
+            html += `<li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); goToPage(${pagination.current_page - 1})">&laquo;</a>
+            </li>`;
+
+            for (let i = 1; i <= pagination.last_page; i++) {
+                html += `<li class="page-item ${i === pagination.current_page ? 'active' : ''}">
+                    <a class="page-link" href="#" onclick="event.preventDefault(); goToPage(${i})">${i}</a>
+                </li>`;
+            }
+
+            html += `<li class="page-item ${pagination.current_page === pagination.last_page ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); goToPage(${pagination.current_page + 1})">&raquo;</a>
+            </li>`;
+
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
         async function refreshOperasional() {
             try {
-                const query = operasionalSearch ? `?search=${encodeURIComponent(operasionalSearch)}` : '';
-                const response = await fetch(`{{ route('operasional.aktif-json') }}${query}`);
+                const params = new URLSearchParams();
+                if (operasionalSearch) params.append('search', operasionalSearch);
+                params.append('page', currentPage);
+
+                const response = await fetch(`{{ route('operasional.aktif-json') }}?${params.toString()}`);
                 const data = await response.json();
                 cachedAreas = data.areas || [];
-                syncExistingPlateStatus(data.transaksis || []);
 
-                const rows = (data.transaksis || []).map((item, index) => `
+                const transaksis = data.transaksis || [];
+                syncExistingPlateStatus(transaksis);
+
+                if (data.pagination) {
+                    renderPagination(data.pagination);
+                }
+
+                const startIndex = (currentPage - 1) * 10;
+                const rows = transaksis.map((item, index) => `
                 <tr>
-                    <td>${index + 1}</td>
+                    <td>${startIndex + index + 1}</td>
                     <td><strong>${item.plat_nomor}</strong></td>
                     <td>${item.pemilik || '-'}</td>
                     <td>${item.jenis_kendaraan ? item.jenis_kendaraan.charAt(0).toUpperCase() + item.jenis_kendaraan.slice(1) : '-'}</td>
@@ -446,11 +456,7 @@
                 return;
             }
 
-            if (!formData.get('id_user')) {
-                showMessage('error', 'Silakan pilih akun owner dari daftar saran.');
-                return;
-            }
-
+            document.getElementById('submitMasukBtn').disabled = true;
             try {
                 const response = await fetch('{{ route('operasional.store-masuk-json') }}', {
                     method: 'POST',
@@ -537,6 +543,7 @@
 
         document.getElementById('searchOperasional').addEventListener('input', (event) => {
             operasionalSearch = event.target.value.trim();
+            currentPage = 1;
 
             if (refreshTimer) {
                 clearTimeout(refreshTimer);
@@ -547,10 +554,6 @@
             }, 250);
         });
 
-        const ownerSearchInput = document.getElementById('ownerSearchInput');
-        const ownerSuggestionBox = document.getElementById('ownerSuggestions');
-        const selectedOwnerIdInput = document.getElementById('selectedOwnerId');
-        const pemilikMasukInput = document.getElementById('pemilikMasukInput');
         const platNomorMasukInput = document.getElementById('platNomorMasukInput');
 
         platNomorMasukInput.addEventListener('input', () => {
@@ -559,38 +562,6 @@
 
         platNomorMasukInput.addEventListener('blur', () => {
             updateMasukPlateWarning(platNomorMasukInput.value);
-        });
-
-        ownerSearchInput.addEventListener('focus', () => {
-            renderOwnerSuggestions(ownerSearchInput.value);
-        });
-
-        ownerSearchInput.addEventListener('click', (event) => {
-            event.stopPropagation();
-            renderOwnerSuggestions(ownerSearchInput.value);
-        });
-
-        ownerSearchInput.addEventListener('input', () => {
-            selectedOwnerIdInput.value = '';
-            pemilikMasukInput.value = '';
-            renderOwnerSuggestions(ownerSearchInput.value);
-        });
-
-        ownerSearchInput.addEventListener('keydown', (event) => {
-            if (event.key !== 'Enter') return;
-
-            const firstOwnerButton = ownerSuggestionBox.querySelector('.suggestion-item:not(:disabled)');
-            if (!firstOwnerButton) return;
-
-            event.preventDefault();
-            firstOwnerButton.click();
-        });
-
-        document.addEventListener('click', (event) => {
-            const ownerFieldContainer = ownerSearchInput.closest('.form-group');
-            if (!ownerFieldContainer || !ownerFieldContainer.contains(event.target)) {
-                ownerSuggestionBox.style.display = 'none';
-            }
         });
 
         refreshOperasional();

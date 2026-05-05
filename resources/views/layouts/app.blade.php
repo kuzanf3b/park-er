@@ -824,6 +824,52 @@
             .stat-value {
                 font-size: 22px;
             }
+
+            /* Responsive Tables as Cards */
+            table {
+                border: 0;
+            }
+
+            table thead {
+                display: none;
+            }
+
+            table tr {
+                display: block;
+                margin-bottom: 1rem;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            }
+
+            table td {
+                display: block;
+                text-align: right;
+                border-bottom: 1px solid var(--border);
+                padding: 10px 15px;
+                position: relative;
+                padding-left: 45%;
+                min-height: 42px;
+            }
+
+            table td:last-child {
+                border-bottom: none;
+            }
+
+            table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: 40%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: var(--text-secondary);
+                font-size: 12px;
+                text-transform: uppercase;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -1064,6 +1110,40 @@
                 alert.style.transition = '0.3s ease';
                 setTimeout(() => alert.remove(), 300);
             }, 5000);
+        });
+
+        // Add data-labels for responsive tables
+        document.addEventListener('DOMContentLoaded', () => {
+            const addTableLabels = () => {
+                document.querySelectorAll('table').forEach(table => {
+                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
+                    if (headers.length === 0) return;
+
+                    table.querySelectorAll('tbody tr').forEach(tr => {
+                        Array.from(tr.children).forEach((td, index) => {
+                            if (headers[index] && !td.hasAttribute('data-label')) {
+                                td.setAttribute('data-label', headers[index]);
+                            }
+                        });
+                    });
+                });
+            };
+
+            addTableLabels();
+
+            // Observe dynamic table additions/modifications
+            const observer = new MutationObserver((mutations) => {
+                let shouldUpdate = false;
+                for (const m of mutations) {
+                    if (m.addedNodes.length > 0 || m.type === 'childList') {
+                        shouldUpdate = true;
+                        break;
+                    }
+                }
+                if (shouldUpdate) addTableLabels();
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
         });
     </script>
 
