@@ -1,58 +1,200 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🅿️ Park-er — Parking Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A web-based parking lot management system built with **Laravel 13**. Park-er handles vehicle entry/exit, automated fee calculation, parking area capacity enforcement, role-based user access, and financial reporting — all through a clean, role-aware web interface.
 
-## About Laravel
+> The application UI and data are primarily in **Indonesian (Bahasa Indonesia)**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Role-Based Access Control** — Three distinct roles (`admin`, `petugas`, `owner`) with route-level enforcement via custom middleware.
+- **Parking Transaction Management** — Full entry/exit workflow with automatic area assignment, tariff lookup, and fee calculation.
+- **"Kilat" (Quick) Mode** — A single-page AJAX interface for `petugas` to process vehicles by license plate scan: if the vehicle is currently parked → exit; otherwise → entry.
+- **Tiered Fee System** — First 2 hours billed at the base rate; additional hours billed at a 1.5× penalty rate. A 5-minute grace period applies before billing starts.
+- **Capacity Enforcement** — Each parking zone has a hard capacity limit, enforced with pessimistic database locking to prevent overbooking under concurrent requests.
+- **Multi-vehicle-type Support** — Motor, Mobil (car), Truk (truck), Bus — each with dedicated zones and tariffs.
+- **Revenue Reports** — Filterable by date range and broken down by vehicle type. Owners only see reports for their own vehicles.
+- **Activity Audit Log** — Every login, logout, transaction, and data mutation is logged with a timestamp and user ID.
+- **Owner Portal** — Vehicle owners can view their registered vehicles, currently parked vehicles, and parking history.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tech Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Layer | Technology |
+|---|---|
+| Backend | PHP 8.3+, Laravel 13 |
+| Database | MySQL 8.0 (production), SQLite (development default) |
+| Frontend | Blade templates, Tailwind CSS v4, Axios |
+| Build tool | Vite 8, Laravel Vite Plugin |
+| Testing | PHPUnit 12 |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 📋 Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- PHP >= 8.3
+- Composer
+- Node.js & npm
+- MySQL 8.0 (for production) **or** SQLite (for local development)
+
+---
+
+## 🚀 Installation & Setup
+
+### Quick setup (all-in-one)
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer run setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+This runs: `composer install` → copy `.env` → generate app key → migrate → `npm install` → `npm run build`.
 
-## Contributing
+### Manual setup
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# 1. Install PHP dependencies
+composer install
 
-## Code of Conduct
+# 2. Configure environment
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**For MySQL:** edit `.env` and set:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=parkir
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-## Security Vulnerabilities
+Then import the bundled SQL dump:
+```bash
+mysql -u root -p parkir < parkir.sql
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**For SQLite (development):**
+```bash
+# The default .env.example already uses sqlite
+php artisan migrate --force
+```
 
-## License
+```bash
+# 3. Install JS dependencies and build assets
+npm install
+npm run build
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## ▶️ Running the Application
+
+### Development (all services at once)
+
+```bash
+composer run dev
+```
+
+This concurrently starts:
+- `php artisan serve` — Laravel dev server
+- `php artisan queue:listen` — Queue worker
+- `php artisan pail` — Log viewer
+- `npm run dev` — Vite HMR dev server
+
+### Production
+
+```bash
+npm run build
+php artisan serve
+```
+
+---
+
+## 🧪 Running Tests
+
+```bash
+composer run test
+# Equivalent to: php artisan config:clear && php artisan test
+```
+
+---
+
+## 👤 Default Users
+
+The SQL dump (`parkir.sql`) seeds three default accounts. All use the password **`password`**.
+
+| Username | Role | Full Name |
+|---|---|---|
+| `admin` | admin | Administrator |
+| `petugas1` | petugas | Petugas Parkir 1 |
+| `owner` | owner | Owner Parkir |
+
+---
+
+## 🏗️ Project Structure
+
+```
+app/
+├── Http/
+│   ├── Controllers/     # AuthController, DashboardController, TransaksiController, ...
+│   └── Middleware/      # RoleMiddleware (role:admin,petugas,owner)
+├── Models/              # AreaParkir, Kendaraan, Tarif, Transaksi, LogAktivitas, User
+├── Services/
+│   ├── ParkingService.php   # Core business logic: entry, exit, fee calculation
+│   └── LogService.php       # Activity audit logging
+database/
+├── migrations/          # Laravel migrations
+└── seeders/
+parkir.sql               # Full MySQL schema + seed data dump
+resources/views/         # Blade templates (auth, dashboard, transaksi, laporan, ...)
+routes/
+└── web.php              # All application routes with role middleware
+```
+
+---
+
+## 💰 Fee Calculation
+
+| Hours parked | Rate |
+|---|---|
+| First 2 hours | Base rate (per hour) |
+| Beyond 2 hours | 1.5× base rate (per hour) |
+| Grace period | First 5 minutes are free |
+
+Default base rates:
+
+| Vehicle Type | Rate per Hour |
+|---|---|
+| Motor (motorcycle) | Rp 2,000 |
+| Mobil (car) | Rp 5,000 |
+| Truk (truck) | Rp 10,000 |
+| Bus | Rp 15,000 |
+
+Rates can be updated by an `admin` via the **Tarif** management page.
+
+---
+
+## 🔑 Role Permissions
+
+| Feature | Admin | Petugas | Owner |
+|---|---|---|---|
+| Dashboard | ✅ (stats + charts) | ✅ (active transactions) | ✅ (own vehicles) |
+| Transactions (page-based) | ✅ | ❌ | ❌ |
+| Transactions (kilat/AJAX) | ❌ | ✅ | ❌ |
+| Transaction receipt | ✅ | ✅ | ❌ |
+| Vehicle management (CRUD) | ✅ | ✅ | Read-only |
+| Parking area management | ✅ | ❌ | ❌ |
+| Tariff management | ✅ | ❌ | ❌ |
+| User management | ✅ | ❌ | ❌ |
+| Revenue reports | ✅ (all) | ❌ | ✅ (own vehicles) |
+| Activity log | ✅ | ❌ | ❌ |
+
+---
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
