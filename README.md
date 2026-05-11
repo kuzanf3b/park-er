@@ -6,7 +6,7 @@ A web-based parking lot management system built with **Laravel 13**. Park-er han
 
 ---
 
-## ✨ Features
+## Features
 
 - **Role-Based Access Control** — Three distinct roles (`admin`, `petugas`, `owner`) with route-level enforcement via custom middleware.
 - **Parking Transaction Management** — Full entry/exit workflow with automatic area assignment, tariff lookup, and fee calculation.
@@ -20,7 +20,7 @@ A web-based parking lot management system built with **Laravel 13**. Park-er han
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -32,7 +32,7 @@ A web-based parking lot management system built with **Laravel 13**. Park-er han
 
 ---
 
-## 📋 Requirements
+## Requirements
 
 - PHP >= 8.3
 - Composer
@@ -41,7 +41,7 @@ A web-based parking lot management system built with **Laravel 13**. Park-er han
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Quick setup (all-in-one)
 
@@ -91,7 +91,7 @@ npm run build
 
 ---
 
-## ▶️ Running the Application
+## Running the Application
 
 ### Development (all services at once)
 
@@ -114,7 +114,7 @@ php artisan serve
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 ```bash
 composer run test
@@ -123,7 +123,7 @@ composer run test
 
 ---
 
-## 👤 Default Users
+## Default Users
 
 The SQL dump (`parkir.sql`) seeds three default accounts. All use the password **`password`**.
 
@@ -135,7 +135,7 @@ The SQL dump (`parkir.sql`) seeds three default accounts. All use the password *
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 app/
@@ -157,7 +157,7 @@ routes/
 
 ---
 
-## 💰 Fee Calculation
+## Fee Calculation
 
 | Hours parked | Rate |
 |---|---|
@@ -178,7 +178,7 @@ Rates can be updated by an `admin` via the **Tarif** management page.
 
 ---
 
-## 🔑 Role Permissions
+## Role Permissions
 
 | Feature | Admin | Petugas | Owner |
 |---|---|---|---|
@@ -192,9 +192,3 @@ Rates can be updated by an `admin` via the **Tarif** management page.
 | User management | ✅ | ❌ | ❌ |
 | Revenue reports | ✅ (all) | ❌ | ✅ (own vehicles) |
 | Activity log | ✅ | ❌ | ❌ |
-
----
-
-## 📄 License
-
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
