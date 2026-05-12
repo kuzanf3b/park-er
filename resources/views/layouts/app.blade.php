@@ -959,12 +959,13 @@
             </div>
 
             <nav class="sidebar-nav">
-                <div class="sidebar-label">Menu Utama</div>
-                <a href="{{ route('dashboard') }}"
-                    class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
+                @if (auth()->user()->role !== 'petugas')
+                    <a href="{{ route('dashboard') }}"
+                        class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                @endif
 
                 @if (auth()->user()->role === 'admin')
                     <div class="sidebar-label">Operasional</div>

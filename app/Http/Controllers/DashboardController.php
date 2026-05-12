@@ -17,47 +17,7 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         if ($user->role === "petugas") {
-            $transaksis = Transaksi::with(["kendaraan", "areaParkir", "tarif"])
-                ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
-                ->latest("created_at")
-                ->paginate(8);
-
-            $existingKendaraanPlates = Kendaraan::query()
-                ->withCount([
-                    "transaksis as parkir_aktif_count" => function ($query) {
-                        $query->where("status", "masuk");
-                    },
-                ])
-                ->get(["id_kendaraan", "plat_nomor"])
-                ->map(function (Kendaraan $kendaraan) {
-                    return [
-                        "id_kendaraan" => (int) $kendaraan->id_kendaraan,
-                        "plat_nomor" => strtoupper(
-                            trim((string) $kendaraan->plat_nomor),
-                        ),
-                        "sedang_parkir" =>
-                            ((int) $kendaraan->parkir_aktif_count) > 0,
-                    ];
-                })
-                ->values();
-
-            $areas = AreaParkir::where("terisi", "<", DB::raw("kapasitas"))
-                ->orderBy("nama_area")
-                ->get();
-
-            $owners = User::where("role", "owner")
-                ->orderBy("nama_lengkap")
-                ->get();
-
-            return view(
-                "dashboard.petugas",
-                compact(
-                    "transaksis",
-                    "areas",
-                    "owners",
-                    "existingKendaraanPlates",
-                ),
-            );
+            return redirect()->route("operasional.kilat");
         }
 
         if ($user->role === "owner") {

@@ -20,6 +20,11 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user && $user->role === 'petugas') {
+                return redirect()->route('operasional.kilat');
+            }
+
             return redirect()->route('dashboard');
         }
         return view('auth.login');
@@ -28,6 +33,11 @@ class AuthController extends Controller
     public function showRegister()
     {
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user && $user->role === 'petugas') {
+                return redirect()->route('operasional.kilat');
+            }
+
             return redirect()->route('dashboard');
         }
 
@@ -54,7 +64,11 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $this->logService->log($user->id_user, 'Login ke sistem');
 
-            return redirect()->intended(route('dashboard'));
+            $homeRoute = $user->role === 'petugas'
+                ? route('operasional.kilat')
+                : route('dashboard');
+
+            return redirect()->intended($homeRoute);
         }
 
         return back()->withErrors([
@@ -97,6 +111,7 @@ class AuthController extends Controller
         $this->logService->log($user->id_user, 'Registrasi akun baru');
         $this->logService->log($user->id_user, 'Login ke sistem');
 
-        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil. Selamat datang!');
+        $homeRoute = $user->role === 'petugas' ? 'operasional.kilat' : 'dashboard';
+        return redirect()->route($homeRoute)->with('success', 'Registrasi berhasil. Selamat datang!');
     }
 }
