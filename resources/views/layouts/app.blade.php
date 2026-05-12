@@ -840,7 +840,7 @@
                 background: var(--surface);
                 border: 1px solid var(--border);
                 border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             }
 
             table td {
@@ -1117,7 +1117,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const addTableLabels = () => {
                 document.querySelectorAll('table').forEach(table => {
-                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
+                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th
+                        .innerText.trim());
                     if (headers.length === 0) return;
 
                     table.querySelectorAll('tbody tr').forEach(tr => {
@@ -1144,7 +1145,10 @@
                 if (shouldUpdate) addTableLabels();
             });
 
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
         });
     </script>
 
