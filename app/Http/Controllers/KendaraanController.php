@@ -38,7 +38,7 @@ class KendaraanController extends Controller
             $query->where('jenis_kendaraan', $request->jenis);
         }
 
-        $kendaraans = $query->latest('created_at')->paginate(15)->withQueryString();
+        $kendaraans = $query->latest('created_at')->paginate(8)->withQueryString();
 
         return view('kendaraan.index', compact('kendaraans'));
     }

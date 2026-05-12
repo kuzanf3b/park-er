@@ -67,7 +67,7 @@ class TransaksiController extends Controller
         $aktivitasPaginator = Transaksi::with(["kendaraan", "areaParkir"])
             ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
             ->latest("waktu_masuk")
-            ->paginate(10);
+            ->paginate(8);
 
         $aktivitasPaginator
             ->getCollection()
@@ -207,7 +207,7 @@ class TransaksiController extends Controller
         $transaksis = $query
             ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
             ->latest("created_at")
-            ->paginate(15)
+            ->paginate(8)
             ->withQueryString();
 
         return view("transaksi.index", compact("transaksis"));

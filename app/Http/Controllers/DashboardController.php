@@ -20,7 +20,7 @@ class DashboardController extends Controller
             $transaksis = Transaksi::with(["kendaraan", "areaParkir", "tarif"])
                 ->orderByRaw("CASE WHEN status = 'masuk' THEN 0 ELSE 1 END")
                 ->latest("created_at")
-                ->paginate(10);
+                ->paginate(8);
 
             $existingKendaraanPlates = Kendaraan::query()
                 ->withCount([
@@ -90,7 +90,7 @@ class DashboardController extends Controller
                 ->whereDate("waktu_keluar", ">=", $tanggalMulai)
                 ->whereDate("waktu_keluar", "<=", $tanggalAkhir)
                 ->latest("waktu_keluar")
-                ->paginate(10)
+                ->paginate(8)
                 ->withQueryString();
 
             $areaParkir = AreaParkir::orderBy("nama_area")->get();
