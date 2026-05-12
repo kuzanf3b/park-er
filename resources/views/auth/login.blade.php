@@ -29,12 +29,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
-        .login-brand-icon img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            display: block;
-        }
 
         .login-brand h1 {
             font-size: 24px;
@@ -88,7 +82,7 @@
     <div class="login-container">
         <div class="login-brand">
             <div class="login-brand-icon">
-                <img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er">
+                <i class="fas fa-car"></i>
             </div>
             <h1>Park-Er</h1>
             <p class="text-muted">Sistem Manajemen Parkir</p>

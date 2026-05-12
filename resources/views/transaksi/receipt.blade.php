@@ -5,7 +5,7 @@
 @section('content')
     <div class="receipt-card">
         <div class="receipt-header">
-            <img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er">
+            <div style="font-size:28px;margin-bottom:8px"><i class="fas fa-car"></i></div>
             <h2 style="font-size:20px;font-weight:700">STRUK PARKIR</h2>
             <p style="font-size:13px;opacity:0.8">{{ $transaksi->waktu_keluar->format('d F Y, H:i') }}</p>
         </div>

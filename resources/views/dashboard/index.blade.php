@@ -7,7 +7,7 @@
     <div class="grid-4 mb-6">
         <div class="stat-card">
             <div class="stat-icon blue">
-                <img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er">
+                <i class="fas fa-car"></i>
             </div>
             <div class="stat-info">
                 <h4>Kendaraan Aktif</h4>

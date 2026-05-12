@@ -96,7 +96,7 @@
                             <td
                                 colspan="{{ auth()->user()->role === 'petugas' || auth()->user()->role === 'admin' ? '7' : '6' }}">
                                 <div class="empty-state">
-                                    <img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er">
+                                    <i class="fas fa-car"></i>
                                     <p>Belum ada data kendaraan</p>
                                 </div>
                             </td>
