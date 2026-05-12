@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Park-Er') - {{ config('app.name') }}</title>
+    <link rel="icon" href="{{ $appLogo ?? asset('favicon.ico') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -86,6 +87,13 @@
             justify-content: center;
             font-size: 18px;
             color: #fff;
+        }
+
+        .sidebar-brand-icon img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            display: block;
         }
 
         .sidebar-brand h2 {
@@ -600,6 +608,13 @@
             flex-shrink: 0;
         }
 
+        .stat-icon img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
         .stat-icon.blue {
             background: #eff6ff;
             color: #2563eb;
@@ -896,6 +911,14 @@
             text-align: center;
         }
 
+        .receipt-header img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 8px;
+        }
+
         .receipt-body {
             padding: 24px;
         }
@@ -935,6 +958,15 @@
             opacity: 0.5;
         }
 
+        .empty-state img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+
         .empty-state p {
             font-size: 15px;
         }
@@ -950,7 +982,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-brand-icon">
-                    <i class="fas fa-car"></i>
+                    <img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er">
                 </div>
                 <div>
                     <h2>Park-Er</h2>

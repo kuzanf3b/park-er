@@ -5,7 +5,7 @@
 @section('content')
     <div class="grid-3 mb-6" style="margin-bottom:24px">
         <div class="stat-card">
-            <div class="stat-icon blue"><i class="fas fa-car"></i></div>
+            <div class="stat-icon blue"><img src="{{ $appLogo ?? asset('favicon.ico') }}" alt="Logo Park-Er"></div>
             <div class="stat-info">
                 <h4>Total Kendaraan Saya</h4>
                 <div class="stat-value">{{ $kendaraans->count() }}</div>
