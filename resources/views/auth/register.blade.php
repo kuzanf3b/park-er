@@ -77,7 +77,7 @@
     <div class="register-container">
         <div class="register-brand">
             <div class="register-brand-icon">
-                    <i class="fas fa-user-plus"></i>
+                <i class="fas fa-user-plus"></i>
             </div>
             <h1>Register Akun</h1>
             <p class="text-muted">Buat akun admin, petugas, atau owner kendaraan</p>
