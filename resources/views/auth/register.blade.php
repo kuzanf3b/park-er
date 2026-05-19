@@ -80,7 +80,7 @@
                 <i class="fas fa-user-plus"></i>
             </div>
             <h1>Register Akun</h1>
-            <p class="text-muted">Buat akun admin, petugas, atau owner kendaraan</p>
+            <p class="text-muted">Buat akun owner kendaraan</p>
         </div>
 
         <div class="register-card">
@@ -97,30 +97,14 @@
                     @enderror
                 </div>
 
-                <div class="form-row mb-3">
-                    <div class="form-group">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" value="{{ old('username') }}"
-                            placeholder="Contoh: petugas01" required>
-                        @error('username')
-                            <div class="form-error text-danger" style="margin-top: 5px; font-size: 0.875em;">{{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Role</label>
-                        <select name="role" class="form-control" required>
-                            <option value="">Pilih role</option>
-                            <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="petugas" {{ old('role') === 'petugas' ? 'selected' : '' }}>Petugas</option>
-                            <option value="owner" {{ old('role') === 'owner' ? 'selected' : '' }}>Owner Kendaraan
-                            </option>
-                        </select>
-                        @error('role')
-                            <div class="form-error text-danger" style="margin-top: 5px; font-size: 0.875em;">{{ $message }}
-                            </div>
-                        @enderror
-                    </div>
+                <div class="form-group mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" value="{{ old('username') }}"
+                        placeholder="Contoh: owner01" required>
+                    @error('username')
+                        <div class="form-error text-danger" style="margin-top: 5px; font-size: 0.875em;">{{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
                 <div class="form-row mb-3">
